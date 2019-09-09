@@ -9,6 +9,8 @@ namespace GeneticEngine
         private int populationSize;
         private float crossOverRate;
         private float mutationRate;
+        private Action<T> randomSolutionFactoryMethod;
+        private List<T> currentPopulation = new List<T>();
 
         public Engine(int populationSize = 1000, float crossOverRate = 0.95, float mutationRate = 0.1)
         {
@@ -20,6 +22,15 @@ namespace GeneticEngine
         public T Solve()
         {
             return default(T);
+        }
+
+        public void CreateInitialPopulation(Action<T> factoryMethod)
+        {
+            currentPopulation.Clear();
+            while (currentPopulation.Count < this.populationSize)
+            {
+                currentPopulation.Add(factoryMethod.Invoke());
+            }
         }
     }
 }
