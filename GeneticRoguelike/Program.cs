@@ -1,4 +1,5 @@
 ﻿using System;
+using GeneticRoguelike.Model;
 
 namespace GeneticRoguelike
 {
@@ -6,6 +7,7 @@ namespace GeneticRoguelike
     {
         static void Main(string[] args)
         {
+            new GridMap();
             Console.WriteLine("Hello World!");
         }
     }

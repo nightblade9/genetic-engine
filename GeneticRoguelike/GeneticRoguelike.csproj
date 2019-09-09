@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GoRogue" Version="2.5.0" />
+  </ItemGroup>
+
 </Project>
