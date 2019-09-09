@@ -27,5 +27,10 @@ namespace GeneticRoguelike
             this.name = name;
             this.callback = callback;
         }
+
+        override public string ToString()
+        {
+            return this.name;
+        }
     }
 }

@@ -12,8 +12,15 @@ namespace GeneticEngine
         private int populationSize;
         private float crossOverRate;
         private float mutationRate;
-        private Action<T> randomSolutionFactoryMethod;
         private List<T> currentPopulation = new List<T>();
+        private Action<T> randomSolutionFactoryMethod;
+        
+        // Given two parents, create one child
+        private Func<T, T, T> oneChildCrossOverMethod = null;
+        // Given two parents, create two children
+        private Func<T, T, T, T> twoChildCrossOverMethod = null;
+
+        private Func<T, T> mutationMethod = null;
 
         public Engine(int populationSize = 1000, float crossOverRate = 0.95f, float mutationRate = 0.1f)
         {
@@ -34,6 +41,21 @@ namespace GeneticEngine
             {
                 currentPopulation.Add(factoryMethod.Invoke());
             }
+        }
+
+        public void SetCrossOverMethod(Func<T, T, T> oneChildMethod)
+        {
+            this.oneChildCrossOverMethod = oneChildMethod;
+        }
+
+        public void SetCrossOverMethod(Func<T, T, T, T> twoChildMethod)
+        {
+            this.twoChildCrossOverMethod = twoChildMethod;
+        }
+
+        public void SetMutationMethod(Func<T, T> mutationMethod)
+        {
+            this.mutationMethod = mutationMethod;
         }
     }
 }
