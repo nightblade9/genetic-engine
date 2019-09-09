@@ -2,8 +2,9 @@ namespace GeneticEngine
 {
     /// <summary>
     /// THE genetic engine. Creates a population, evaluates fitness, cross-overs, mutates, repeats until fitness stabilizes.
+    /// Note that the type T is your solution candidate, and S is your state. (eg. T is list of ops, S is the dungeon state)
     /// </summary>
-    public class Engine
+    public class Engine<T, S>
     {
         private int populationSize;
         private float crossOverRate;
@@ -14,6 +15,11 @@ namespace GeneticEngine
             this.populationSize = populationSize;
             this.crossOverRate = crossOverRate;
             this.mutationRate = mutationRate;
+        }
+
+        public T Solve()
+        {
+            return default(T);
         }
     }
 }

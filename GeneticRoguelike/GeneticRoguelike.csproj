@@ -9,4 +9,8 @@
     <PackageReference Include="GoRogue" Version="2.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GeneticEngine\GeneticEngine.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using GeneticRoguelike.Model;
+using GeneticEngine;
 
 namespace GeneticRoguelike
 {
@@ -7,8 +8,8 @@ namespace GeneticRoguelike
     {
         static void Main(string[] args)
         {
-            new GridMap();
-            Console.WriteLine("Hello World!");
+            var engine = new Engine<List<DungeonOp>, GridMap>();
+            engine.Solve();
         }
     }
 }
