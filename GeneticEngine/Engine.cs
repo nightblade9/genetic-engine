@@ -18,7 +18,7 @@ namespace GeneticEngine
         // Given two parents, create one child
         private Func<T, T, T> oneChildCrossOverMethod = null;
         // Given two parents, create two children
-        private Func<T, T, T, T> twoChildCrossOverMethod = null;
+        private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
 
         private Func<T, T> mutationMethod = null;
 
@@ -48,7 +48,7 @@ namespace GeneticEngine
             this.oneChildCrossOverMethod = oneChildMethod;
         }
 
-        public void SetCrossOverMethod(Func<T, T, T, T> twoChildMethod)
+        public void SetCrossOverMethod(Func<T, T, Tuple<T, T>> twoChildMethod)
         {
             this.twoChildCrossOverMethod = twoChildMethod;
         }
