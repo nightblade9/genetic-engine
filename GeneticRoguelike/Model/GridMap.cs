@@ -3,7 +3,7 @@ using System;
 
 namespace GeneticRoguelike.Model
 {
-    class GridMap
+    public class GridMap
     {
         // We create lots of these close to each other temporally, so seed them with a random number from this guy
         private static Random gridMapRandomizer = new Random();

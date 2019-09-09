@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GeneticRoguelike.Model;
 using GeneticEngine;
 
@@ -16,7 +17,7 @@ namespace GeneticRoguelike
         }
 
         // Not part of the engine because it doesn't know if we want a tree, list, etc.
-        private List<DungeonOp> CreateInitialPopulation()
+        private List<DungeonOp> CreateRandomDungeonOpList()
         {
             var length = random.Next(5, 16);
             var toReturn = new List<DungeonOp>();
@@ -25,6 +26,7 @@ namespace GeneticRoguelike
                 var newOp = DungeonOp.CreateRandom();
                 toReturn.Add(newOp);
             }
+            return toReturn;
         }
     }
 }

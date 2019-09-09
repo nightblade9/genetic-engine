@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace GeneticEngine
 {
     /// <summary>
@@ -12,7 +15,7 @@ namespace GeneticEngine
         private Action<T> randomSolutionFactoryMethod;
         private List<T> currentPopulation = new List<T>();
 
-        public Engine(int populationSize = 1000, float crossOverRate = 0.95, float mutationRate = 0.1)
+        public Engine(int populationSize = 1000, float crossOverRate = 0.95f, float mutationRate = 0.1f)
         {
             this.populationSize = populationSize;
             this.crossOverRate = crossOverRate;
@@ -24,7 +27,7 @@ namespace GeneticEngine
             return default(T);
         }
 
-        public void CreateInitialPopulation(Action<T> factoryMethod)
+        public void CreateInitialPopulation(Func<T> factoryMethod)
         {
             currentPopulation.Clear();
             while (currentPopulation.Count < this.populationSize)
