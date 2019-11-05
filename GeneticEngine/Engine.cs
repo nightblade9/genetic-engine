@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GeneticEngine
 {
@@ -13,9 +14,10 @@ namespace GeneticEngine
         private float crossOverRate;
         private float mutationRate;
         private List<T> currentPopulation = new List<T>();
+        private Random random = new Random();
         
         // Given two parents, create one child
-        private Func<T, T, T> oneChildCrossOverMethod = null;
+        // private Func<T, T, T> oneChildCrossOverMethod = null;
         // Given two parents, create two children
         private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
 
@@ -30,7 +32,21 @@ namespace GeneticEngine
 
         public T Solve()
         {
-            return default(T);
+            // TODO: validate population is created, cross-over/mutation methods are set, etc.
+
+            var generation = 0;
+            CandidateSolution<T> best = null;
+
+            while (generation < 1000) // Arbitrary
+            {
+                var fitnessScores = this.EvaulateFitness();
+                best = fitnessScores.First();
+                Console.WriteLine($"Generation {generation}: best score is {best.Fitness}!");
+                var nextGeneration = this.CreateNextGeneration(fitnessScores);
+                this.currentPopulation = nextGeneration;
+            }
+
+            return best.Solution;
         }
 
         public void CreateInitialPopulation(Func<T> factoryMethod)
@@ -55,6 +71,53 @@ namespace GeneticEngine
         public void SetMutationMethod(Func<T, T> mutationMethod)
         {
             this.mutationMethod = mutationMethod;
+        }
+
+        private IEnumerable<CandidateSolution<T>> EvaulateFitness()
+        {
+            var toReturn = new List<CandidateSolution<T>>();
+
+            return toReturn.OrderByDescending(c => c.Fitness);
+        }
+
+        private List<T> CreateNextGeneration(IEnumerable<CandidateSolution<T>> currentGeneration)
+        {
+            // TODOOOOOOOOOOOOOOOOO: we're missing tournament selection
+
+            var toReturn = new List<T>();
+            var currentGenerationIndex = 0;
+            var currentGenerationCount = currentGeneration.Count();
+
+            // Since items are ordered, just iterate until we get enough for a new generation.
+            while (currentGenerationIndex < currentGenerationCount && toReturn.Count < this.populationSize)
+            {
+                var solution = currentGeneration.ElementAt(currentGenerationIndex);
+
+                if (random.NextDouble() <= this.crossOverRate)
+                {
+                    var secondParent = currentGenerationIndex + 1 < currentGenerationCount ? currentGeneration.ElementAt(currentGenerationIndex + 1) : solution;
+                    var result = this.twoChildCrossOverMethod.Invoke(solution.Solution, secondParent.Solution);
+                    toReturn.Add(result.Item1);
+                    toReturn.Add(result.Item2);
+                }
+
+                if (random.NextDouble() <= this.mutationRate)
+                {
+                    var result = this.mutationMethod(solution.Solution);
+                    toReturn.Add(result);
+                }
+
+                currentGenerationIndex++;
+            }
+
+            if (toReturn.Count < this.populationSize)
+            {
+                // Not everything mutates, crosses over, etc. So pick the best if we're short-staffed
+                var diff = this.populationSize - toReturn.Count;
+                toReturn.AddRange(currentGeneration.Take(diff).Select(s => s.Solution));
+            }
+
+            return toReturn;
         }
     }
 }
