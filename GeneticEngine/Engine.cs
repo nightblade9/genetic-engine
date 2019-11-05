@@ -20,8 +20,8 @@ namespace GeneticEngine
         // private Func<T, T, T> oneChildCrossOverMethod = null;
         // Given two parents, create two children
         private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
-
         private Func<T, T> mutationMethod = null;
+        private Func<T, float> calculateFitnessMethod = null;
 
         public Engine(int populationSize = 1000, float crossOverRate = 0.95f, float mutationRate = 0.1f)
         {
@@ -37,7 +37,7 @@ namespace GeneticEngine
             var generation = 0;
             CandidateSolution<T> best = null;
 
-            while (generation < 1000) // Arbitrary
+            while (generation++ < 100) // Arbitrary. TODO: stop if fitness plateaus.
             {
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
@@ -73,11 +73,22 @@ namespace GeneticEngine
             this.mutationMethod = mutationMethod;
         }
 
+        public void SetFitnessMethod(Func<T, float> fitnessMethod)
+        {
+            this.calculateFitnessMethod = fitnessMethod;
+        }
+
         private IEnumerable<CandidateSolution<T>> EvaulateFitness()
         {
             var toReturn = new List<CandidateSolution<T>>();
 
-            return toReturn.OrderByDescending(c => c.Fitness);
+            foreach (var item in this.currentPopulation)
+            {
+                var score = this.calculateFitnessMethod(item);
+                toReturn.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
+            }
+
+            return toReturn.OrderByDescending(t => t.Fitness);
         }
 
         private List<T> CreateNextGeneration(IEnumerable<CandidateSolution<T>> currentGeneration)
