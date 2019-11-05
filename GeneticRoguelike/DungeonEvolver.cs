@@ -108,7 +108,8 @@ namespace GeneticRoguelike
                 var x = random.Next(GridMap.TILES_WIDE);
                 var y = random.Next(GridMap.TILES_HIGH);
                 var next = new GoRogue.Coord(x, y);
-                if (!points.Contains(next))
+                // Make sure we get walkable points
+                if (map.Get(x, y) == true && !points.Contains(next))
                 {
                     points.Add(next);
                 }
@@ -124,8 +125,9 @@ namespace GeneticRoguelike
                 for (int j = i + 1; j < points.Count; j++)
                 {
                     var path = aStar.ShortestPath(points[i], points[j]);
+                    
                     numCalculated++;
-                    totalCalculated += path != null ? path.Length : 0;
+                    totalCalculated +=  path != null ? path.Length : 0; // 0 if no path found
                 }
             }
 

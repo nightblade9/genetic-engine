@@ -12,6 +12,7 @@ namespace GeneticRoguelike.Model
         private const int HALL_MIN_SIZE = 5;
         private const int HALL_MAX_SIZE = 8;
 
+        // false = can't walk
         internal readonly ArrayMap<bool> Data = new ArrayMap<bool>(GridMap.TILES_WIDE, GridMap.TILES_HIGH);
 
         private Random random;
