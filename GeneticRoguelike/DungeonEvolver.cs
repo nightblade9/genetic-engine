@@ -16,7 +16,7 @@ namespace GeneticRoguelike
 
         public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
         {
-            var engine = new Engine<List<DungeonOp>, GridMap>();
+            var engine = new Engine<List<DungeonOp>, GridMap>(1000, 1f, 0f);
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
@@ -132,7 +132,7 @@ namespace GeneticRoguelike
                 }
             }
 
-            return totalCalculated / numCalculated;
+            return 1f * totalCalculated / numCalculated;
         }
     }
 }
