@@ -23,7 +23,7 @@ namespace GeneticEngine
         private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
         private Func<T, T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
-        private Action<int, CandidateSolution<T>> onGenerationCallback = null;
+        private Action<int, CandidateSolution<T>, float> onGenerationCallback = null;
         CandidateSolution<T> best = null;
 
         public Engine(int populationSize, float crossOverRate, float mutationRate)
@@ -43,12 +43,14 @@ namespace GeneticEngine
             {
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
+                var average = fitnessScores.Average(f => f.Fitness);
+
                 var nextGeneration = this.CreateNextGeneration(fitnessScores);
                 this.currentPopulation = nextGeneration;
                 
                 if (this.onGenerationCallback != null)
                 {
-                    this.onGenerationCallback.Invoke(generation, best);
+                    this.onGenerationCallback.Invoke(generation, best, average);
                 }
             }
         }
@@ -82,7 +84,7 @@ namespace GeneticEngine
             this.calculateFitnessMethod = fitnessMethod;
         }
 
-        public void OnGenerationCallback(Action<int, CandidateSolution<T>> callback)
+        public void OnGenerationCallback(Action<int, CandidateSolution<T>, float> callback)
         {
             this.onGenerationCallback = callback;
         }

@@ -14,7 +14,7 @@ namespace GeneticRoguelike
 
         private Random random = new Random();
 
-        public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
+        public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>, float> callback)
         {
             var engine = new Engine<List<DungeonOp>, GridMap>(1000, 0.95f, 0.05f);
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
@@ -28,7 +28,7 @@ namespace GeneticRoguelike
         // Not part of the engine because it doesn't know if we want a tree, list, etc.
         private List<DungeonOp> CreateRandomDungeonOpList()
         {
-            var length = random.Next(5, 15);
+            var length = random.Next(5, 10);
             var toReturn = new List<DungeonOp>();
             while (toReturn.Count < length)
             {
@@ -43,21 +43,13 @@ namespace GeneticRoguelike
             var toReturn = new List<DungeonOp>(input);
             var mutationOp = random.Next(100);
 
-            if (mutationOp < 30) // 30% chance to add a random op
+            if (mutationOp < 33) // add a random op
             {
                 var op = DungeonOp.CreateRandom();
                 var index = random.Next(input.Count);
                 input.Insert(index, op);
             }
-            else if (mutationOp >= 30 && mutationOp < 60) // 30% chance to remove a random op
-            {
-                if (toReturn.Count > MINIMUM_SOLUTION_SIZE)
-                {
-                    var index = random.Next(toReturn.Count);
-                    toReturn.RemoveAt(index);
-                }
-            }
-            else // 40% chance to swap two elements
+            else if (mutationOp >= 33 && mutationOp < 66) // swap two elements
             {
                 var firstIndex = random.Next(toReturn.Count);
                 var secondIndex = random.Next(toReturn.Count);
@@ -65,6 +57,14 @@ namespace GeneticRoguelike
                 var temp = toReturn[firstIndex];
                 toReturn[firstIndex] = toReturn[secondIndex];
                 toReturn[secondIndex] = temp;
+            }
+            else // remove random element
+            {
+                if (toReturn.Count > MINIMUM_SOLUTION_SIZE)
+                {
+                    var index = random.Next(toReturn.Count);
+                    toReturn.RemoveAt(index);
+                }
             }
 
             return toReturn;

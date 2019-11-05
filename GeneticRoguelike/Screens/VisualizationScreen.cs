@@ -27,16 +27,16 @@ namespace GeneticRoguelike.Screens
             this.thread.Suspend();
         }
 
-        private void Redraw(int generation, CandidateSolution<List<DungeonOp>> best)
+        private void Redraw(int generation, CandidateSolution<List<DungeonOp>> data, float average)
         {
             this.Clear();
             
-            var status = $"Generation {generation}, best fitness = {best.Fitness}, solution is {best.Solution.Count} ops";
+            var status = $"Generation {generation}, FITNESS: best={data.Fitness}, average={average}, solution is {data.Solution.Count} ops";
             this.Print(0, STATUS_Y, status, Color.White);
             System.Console.WriteLine(status);
 
             var map = new GridMap();
-            foreach (var op in best.Solution)
+            foreach (var op in data.Solution)
             {
                 op.Execute(map);
             }
