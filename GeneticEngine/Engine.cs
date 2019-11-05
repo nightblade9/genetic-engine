@@ -23,6 +23,7 @@ namespace GeneticEngine
         private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
         private Func<T, T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
+        private Action<int, CandidateSolution<T>> onGenerationCallback = null;
 
         public Engine(int populationSize = 1000, float crossOverRate = 0.95f, float mutationRate = 0.1f)
         {
@@ -42,9 +43,13 @@ namespace GeneticEngine
             {
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
-                Console.WriteLine($"Generation {generation}: best score is {best.Fitness}!");
                 var nextGeneration = this.CreateNextGeneration(fitnessScores);
                 this.currentPopulation = nextGeneration;
+                
+                if (this.onGenerationCallback != null)
+                {
+                    this.onGenerationCallback.Invoke(generation, best);
+                }
             }
 
             return best.Solution;
@@ -77,6 +82,11 @@ namespace GeneticEngine
         public void SetFitnessMethod(Func<T, float> fitnessMethod)
         {
             this.calculateFitnessMethod = fitnessMethod;
+        }
+
+        public void OnGenerationCallback(Action<int, CandidateSolution<T>> callback)
+        {
+            this.onGenerationCallback = callback;
         }
 
         // Makes a VERY big assumption that fitness is calculated independently per solution.
