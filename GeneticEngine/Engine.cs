@@ -13,7 +13,6 @@ namespace GeneticEngine
         private float crossOverRate;
         private float mutationRate;
         private List<T> currentPopulation = new List<T>();
-        private Action<T> randomSolutionFactoryMethod;
         
         // Given two parents, create one child
         private Func<T, T, T> oneChildCrossOverMethod = null;
@@ -43,10 +42,10 @@ namespace GeneticEngine
             }
         }
 
-        public void SetCrossOverMethod(Func<T, T, T> oneChildMethod)
-        {
-            this.oneChildCrossOverMethod = oneChildMethod;
-        }
+        // public void SetCrossOverMethod(Func<T, T, T> oneChildMethod)
+        // {
+        //     this.oneChildCrossOverMethod = oneChildMethod;
+        // }
 
         public void SetCrossOverMethod(Func<T, T, Tuple<T, T>> twoChildMethod)
         {
