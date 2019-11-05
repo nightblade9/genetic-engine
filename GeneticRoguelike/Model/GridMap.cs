@@ -24,6 +24,18 @@ namespace GeneticRoguelike.Model
         {
             this.random = new Random(gridMapRandomizer.Next());
             this.FillWithRandomTiles();
+
+            // create a border
+            for (int x = 0; x < TILES_WIDE; x++)
+            {
+                this.Data[x, 0] = false;
+                this.Data[x, TILES_HIGH - 1] = false;
+            }
+            for (int y = 0; y < TILES_HIGH; y++)
+            {
+                this.Data[0, y] = false;
+                this.Data[TILES_WIDE - 1, y] = false;
+            }
         }
 
         public bool Get(int x, int y)

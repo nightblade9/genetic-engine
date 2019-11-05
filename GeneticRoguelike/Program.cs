@@ -12,8 +12,14 @@ namespace GeneticRoguelike
         {
             SadConsole.Game.Create("Fonts/IBM.font", WIDTH, HEIGHT);
 
-            SadConsole.Game.OnInitialize = () => {
+            SadConsole.Game.OnInitialize = () =>
+            {
                 Global.CurrentScreen = new VisualizationScreen(WIDTH, HEIGHT);
+            };
+
+            SadConsole.Game.OnDestroy = () =>
+            {
+                (Global.CurrentScreen as VisualizationScreen).ShutDown();
             };
 
             SadConsole.Game.Instance.Run();
