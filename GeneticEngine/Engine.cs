@@ -24,20 +24,20 @@ namespace GeneticEngine
         private Func<T, T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
+        CandidateSolution<T> best = null;
 
-        public Engine(int populationSize = 1000, float crossOverRate = 0.95f, float mutationRate = 0.1f)
+        public Engine(int populationSize, float crossOverRate, float mutationRate)
         {
             this.populationSize = populationSize;
             this.crossOverRate = crossOverRate;
             this.mutationRate = mutationRate;
         }
 
-        public T Solve()
+        public void Solve()
         {
             // TODO: validate population is created, cross-over/mutation methods are set, etc.
 
             var generation = 0;
-            CandidateSolution<T> best = null;
 
             while (generation++ < 100) // Arbitrary. TODO: stop if fitness plateaus.
             {
@@ -51,8 +51,6 @@ namespace GeneticEngine
                     this.onGenerationCallback.Invoke(generation, best);
                 }
             }
-
-            return best.Solution;
         }
 
         public void CreateInitialPopulation(Func<T> factoryMethod)
@@ -110,26 +108,31 @@ namespace GeneticEngine
 
             while (toReturn.Count < this.populationSize)
             {
+                Tuple<T, T> result;
                 var parent1 = currentGeneration[random.Next(currentGeneration.Count)];
                 var parent2 = currentGeneration[random.Next(currentGeneration.Count)];
 
                 if (random.NextDouble() <= this.crossOverRate)
                 {
-                    var result = this.twoChildCrossOverMethod.Invoke(parent1.Solution, parent2.Solution);
-                
-                    if (random.NextDouble() <= this.mutationRate)
-                    {
-                        this.mutationMethod(result.Item1);
-                    }
-
-                    if (random.NextDouble() <= this.mutationRate)
-                    {
-                        this.mutationMethod(result.Item2);
-                    }
-
-                    toReturn.Add(result.Item1);
-                    toReturn.Add(result.Item2);
+                    result = this.twoChildCrossOverMethod.Invoke(parent1.Solution, parent2.Solution);
                 }
+                else
+                {
+                    result = new Tuple<T, T>(parent1.Solution, parent2.Solution);
+                }
+
+                if (random.NextDouble() <= this.mutationRate)
+                {
+                    this.mutationMethod(result.Item1);
+                }
+
+                if (random.NextDouble() <= this.mutationRate)
+                {
+                    this.mutationMethod(result.Item2);
+                }
+
+                toReturn.Add(result.Item1);
+                toReturn.Add(result.Item2);
             }
 
             return toReturn;
