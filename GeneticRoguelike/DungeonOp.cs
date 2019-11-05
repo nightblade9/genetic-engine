@@ -15,6 +15,13 @@ namespace GeneticRoguelike
         {
             new DungeonOp("Set5RandomTiles", (gridMap) => gridMap.SetNRandomTiles(5, true)),
             new DungeonOp("Clear5RandomTiles", (gridMap) => gridMap.SetNRandomTiles(5, false)),
+            new DungeonOp("SetHorizontalHallway", (gridMap) => gridMap.SetHallway(true, true)),
+            new DungeonOp("SetVerticalHallway", (gridMap) => gridMap.SetHallway(true, false)),
+            new DungeonOp("ClearHorizontalHallway", (gridMap) => gridMap.SetHallway(false, true)),
+            new DungeonOp("ClearVerticalHallway", (gridMap) => gridMap.SetHallway(false, false)),
+            new DungeonOp("SetRoom", (gridMap) => gridMap.SetArea(true)),
+            new DungeonOp("ClearRoom", (gridMap) => gridMap.SetArea(false)),
+            new DungeonOp("Smooth", (gridMap) => gridMap.Smooth()),
         };
 
         public static DungeonOp CreateRandom()

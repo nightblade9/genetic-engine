@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using GeneticRoguelike.Model;
 using GeneticEngine;
-using GoRogue.MapViews;
 using GoRogue.Pathing;
 
 namespace GeneticRoguelike
