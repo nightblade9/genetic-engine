@@ -28,7 +28,7 @@ namespace GeneticRoguelike
         // Not part of the engine because it doesn't know if we want a tree, list, etc.
         private List<DungeonOp> CreateRandomDungeonOpList()
         {
-            var length = random.Next(5, 16);
+            var length = random.Next(5, 15);
             var toReturn = new List<DungeonOp>();
             while (toReturn.Count < length)
             {
@@ -103,8 +103,8 @@ namespace GeneticRoguelike
             }
             
             // Generate ten points. Repeats are ignored.
-            var points = new List<GoRogue.Coord>(10);
-            while (points.Count < 10)
+            var points = new List<GoRogue.Coord>(15);
+            while (points.Count < 15)
             {
                 var x = random.Next(GridMap.TILES_WIDE);
                 var y = random.Next(GridMap.TILES_HIGH);
@@ -118,21 +118,20 @@ namespace GeneticRoguelike
 
             // Calculate distance from each point to each point
             var numCalculated = 0;
-            var totalCalculated = 0;
-            var aStar = new AStar(map.Data, GoRogue.Distance.EUCLIDEAN);
+            var totalCalculated = 0f;
+            var aStar = new AStar(map.Data, GoRogue.Distance.MANHATTAN);
 
             for (int i = 0; i < points.Count; i++)
             {
                 for (int j = i + 1; j < points.Count; j++)
                 {
                     var path = aStar.ShortestPath(points[i], points[j]);
-                    
                     numCalculated++;
                     totalCalculated +=  path != null ? path.Length : 0; // 0 if no path found
                 }
             }
 
-            return 1f * totalCalculated / numCalculated;
+            return totalCalculated / numCalculated;
         }
     }
 }
