@@ -14,13 +14,14 @@ namespace GeneticRoguelike
 
         private Random random = new Random();
 
-        public void EvolveSolution()
+        public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
         {
             var engine = new Engine<List<DungeonOp>, GridMap>();
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
             engine.SetMutationMethod(this.Mutate);
+            engine.OnGenerationCallback(callback);
             engine.Solve();
         }
 
