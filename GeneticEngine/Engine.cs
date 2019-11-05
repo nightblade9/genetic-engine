@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeneticEngine
 {
@@ -78,15 +79,17 @@ namespace GeneticEngine
             this.calculateFitnessMethod = fitnessMethod;
         }
 
+        // Makes a VERY big assumption that fitness is calculated independently per solution.
+        // If this is wrong, prepare for the worst race conditions EVAR.
         private IEnumerable<CandidateSolution<T>> EvaulateFitness()
         {
             var toReturn = new List<CandidateSolution<T>>();
 
-            foreach (var item in this.currentPopulation)
+            Parallel.ForEach(this.currentPopulation, item =>
             {
                 var score = this.calculateFitnessMethod(item);
                 toReturn.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
-            }
+            });
 
             return toReturn.OrderByDescending(t => t.Fitness);
         }
