@@ -124,9 +124,9 @@ namespace GeneticRoguelike
             {
                 for (int j = i + 1; j < points.Count; j++)
                 {
-                    var distance = aStar.ShortestPath(points[i], points[j]).Length;
+                    var path = aStar.ShortestPath(points[i], points[j]);
                     numCalculated++;
-                    totalCalculated += distance;
+                    totalCalculated += path != null ? path.Length : 0;
                 }
             }
 
