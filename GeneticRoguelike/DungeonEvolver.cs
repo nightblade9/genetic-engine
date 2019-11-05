@@ -2,18 +2,24 @@ using System;
 using System.Collections.Generic;
 using GeneticRoguelike.Model;
 using GeneticEngine;
+using GoRogue.MapViews;
+using GoRogue.Pathing;
 
 namespace GeneticRoguelike
 {
     public class DungeonEvolver
     {
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
+        private const int DUNGEON_WIDTH = 80;
+        private const int DUNGEON_HEIGHT = 28;
+
         private Random random = new Random();
 
         public void EvolveSolution()
         {
             var engine = new Engine<List<DungeonOp>, GridMap>();
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
+            engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
             engine.SetMutationMethod(this.Mutate);
             engine.Solve();
@@ -84,6 +90,47 @@ namespace GeneticRoguelike
             child2.AddRange(p2End);
 
             return new Tuple<List<DungeonOp>, List<DungeonOp>>(child1, child2);
+        }
+
+        private float CalculateFitness(List<DungeonOp> solution)
+        {
+            // Perhaps the most costly part of all: generate a dungeon, pick ten random points, and calculate the 
+            // average distance (walking a path) from each point to each every point (10 * 9).
+            var map = new GridMap();
+            foreach (DungeonOp op in solution)
+            {
+                op.Execute(map);
+            }
+            
+            // Generate ten points. Repeats are ignored.
+            var points = new List<GoRogue.Coord>(10);
+            while (points.Count < 10)
+            {
+                var x = random.Next(GridMap.TILES_WIDE);
+                var y = random.Next(GridMap.TILES_HIGH);
+                var next = new GoRogue.Coord(x, y);
+                if (!points.Contains(next))
+                {
+                    points.Add(next);
+                }
+            }
+
+            // Calculate distance from each point to each point
+            var numCalculated = 0;
+            var totalCalculated = 0;
+            var aStar = new AStar(map.Data, GoRogue.Distance.EUCLIDEAN);
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                for (int j = i + 1; j < points.Count; j++)
+                {
+                    var distance = aStar.ShortestPath(points[i], points[j]).Length;
+                    numCalculated++;
+                    totalCalculated += distance;
+                }
+            }
+
+            return totalCalculated / numCalculated;
         }
     }
 }

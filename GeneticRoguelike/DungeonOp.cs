@@ -11,7 +11,8 @@ namespace GeneticRoguelike
         private string name = "";
         private Action<GridMap> callback;
 
-        public static List<DungeonOp> ALL_OPS = new List<DungeonOp>() {
+        public static List<DungeonOp> ALL_OPS = new List<DungeonOp>()
+        {
             new DungeonOp("Set5RandomTiles", (gridMap) => gridMap.SetNRandomTiles(5, true)),
             new DungeonOp("Clear5RandomTiles", (gridMap) => gridMap.SetNRandomTiles(5, false)),
         };
@@ -26,6 +27,11 @@ namespace GeneticRoguelike
         {
             this.name = name;
             this.callback = callback;
+        }
+
+        public void Execute(GridMap target)
+        {
+            this.callback.Invoke(target);
         }
 
         override public string ToString()

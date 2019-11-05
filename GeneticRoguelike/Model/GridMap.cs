@@ -4,15 +4,16 @@ using System;
 namespace GeneticRoguelike.Model
 {
     public class GridMap
-    {
-        // We create lots of these close to each other temporally, so seed them with a random number from this guy
-        private static Random gridMapRandomizer = new Random();
+    {        
+        public const int TILES_WIDE = 80;
+        public const int TILES_HIGH = 28;
 
-        const int TILES_WIDE = 30 - 2;
-        const int TILES_HIGH = 18 - 2;
+        internal readonly ArrayMap<bool> Data = new ArrayMap<bool>(GridMap.TILES_WIDE, GridMap.TILES_HIGH);
 
         private Random random;
-        private ArrayMap<bool> data = new ArrayMap<bool>(TILES_WIDE, TILES_HIGH);
+
+        // We create lots of these close to each other temporally, so seed them with a random number from this guy
+        private static Random gridMapRandomizer = new Random();
 
         public GridMap()
         {
@@ -23,13 +24,21 @@ namespace GeneticRoguelike.Model
         public bool Get(int x, int y)
         {
             this.ValidateCoordinates(x, y);
-            return data[x, y];
+            return Data[x, y];
         }
 
         public void Set(int x, int y, bool isFloor)
         {
             this.ValidateCoordinates(x, y);
-            data[x, y] = isFloor;
+            Data[x, y] = isFloor;
+        }
+
+        private void ValidateCoordinates(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= TILES_WIDE || y >= TILES_HIGH)
+            {
+                throw new ArgumentException($"Coordinates ({x}, {y}) are out of range (0, 0) - ({TILES_WIDE}, {TILES_HIGH})");
+            }
         }
 
         internal int SetNRandomTiles(int n, bool newState)
@@ -44,15 +53,6 @@ namespace GeneticRoguelike.Model
                 tilesLeft--;
             }
             return 0;
-        }
-
-        private void ValidateCoordinates(int x, int y)
-        {
-            if (x < 0 || y < 0 || x >= TILES_WIDE || y >= TILES_HIGH)
-            {
-                throw new ArgumentException($"Coordinates ({x}, {y}) are out of range (0, 0) - ({TILES_WIDE}, {TILES_HIGH})");
-            }
-
         }
 
         private void FillWithRandomTiles()
