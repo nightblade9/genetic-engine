@@ -13,9 +13,9 @@ namespace GeneticRoguelike
         public void EvolveSolution()
         {
             var engine = new Engine<List<DungeonOp>, GridMap>();
-            engine.CreateInitialPopulation(CreateRandomDungeonOpList);
-            engine.SetCrossOverMethod(CrossOver);
-            engine.SetMutationMethod(Mutate);
+            engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
+            engine.SetCrossOverMethod(this.CrossOver);
+            engine.SetMutationMethod(this.Mutate);
             engine.Solve();
         }
 
@@ -37,11 +37,13 @@ namespace GeneticRoguelike
             var toReturn = new List<DungeonOp>(input);
             var mutationOp = random.Next(100);
 
-            if (mutationOp < 30) // 30%
+            if (mutationOp < 30) // 30% chance to add a random op
             {
-                toReturn.Add(DungeonOp.CreateRandom());
+                var op = DungeonOp.CreateRandom();
+                var index = random.Next(input.Count);
+                input.Insert(index, op);
             }
-            else if (mutationOp >= 30 && mutationOp < 60) // 30%
+            else if (mutationOp >= 30 && mutationOp < 60) // 30% chance to remove a random op
             {
                 if (toReturn.Count > MINIMUM_SOLUTION_SIZE)
                 {
@@ -49,7 +51,7 @@ namespace GeneticRoguelike
                     toReturn.RemoveAt(index);
                 }
             }
-            else // 40%
+            else // 40% chance to swap two elements
             {
                 var firstIndex = random.Next(toReturn.Count);
                 var secondIndex = random.Next(toReturn.Count);
