@@ -81,7 +81,7 @@ namespace GeneticEngine
 
         // Makes a VERY big assumption that fitness is calculated independently per solution.
         // If this is wrong, prepare for the worst race conditions EVAR.
-        private IEnumerable<CandidateSolution<T>> EvaulateFitness()
+        private IList<CandidateSolution<T>> EvaulateFitness()
         {
             var toReturn = new List<CandidateSolution<T>>();
 
@@ -91,44 +91,35 @@ namespace GeneticEngine
                 toReturn.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
             });
 
-            return toReturn.OrderByDescending(t => t.Fitness);
+            return toReturn.OrderByDescending(t => t.Fitness).ToList();
         }
 
-        private List<T> CreateNextGeneration(IEnumerable<CandidateSolution<T>> currentGeneration)
+        private List<T> CreateNextGeneration(IList<CandidateSolution<T>> currentGeneration)
         {
-            // TODOOOOOOOOOOOOOOOOO: we're missing tournament selection
-
             var toReturn = new List<T>();
-            var currentGenerationIndex = 0;
-            var currentGenerationCount = currentGeneration.Count();
 
-            // Since items are ordered, just iterate until we get enough for a new generation.
-            while (currentGenerationIndex < currentGenerationCount && toReturn.Count < this.populationSize)
+            while (toReturn.Count < this.populationSize)
             {
-                var solution = currentGeneration.ElementAt(currentGenerationIndex);
+                var parent1 = currentGeneration[random.Next(currentGeneration.Count)];
+                var parent2 = currentGeneration[random.Next(currentGeneration.Count)];
 
                 if (random.NextDouble() <= this.crossOverRate)
                 {
-                    var secondParent = currentGenerationIndex + 1 < currentGenerationCount ? currentGeneration.ElementAt(currentGenerationIndex + 1) : solution;
-                    var result = this.twoChildCrossOverMethod.Invoke(solution.Solution, secondParent.Solution);
+                    var result = this.twoChildCrossOverMethod.Invoke(parent1.Solution, parent2.Solution);
+                
+                    if (random.NextDouble() <= this.mutationRate)
+                    {
+                        this.mutationMethod(result.Item1);
+                    }
+
+                    if (random.NextDouble() <= this.mutationRate)
+                    {
+                        this.mutationMethod(result.Item2);
+                    }
+
                     toReturn.Add(result.Item1);
                     toReturn.Add(result.Item2);
                 }
-
-                if (random.NextDouble() <= this.mutationRate)
-                {
-                    var result = this.mutationMethod(solution.Solution);
-                    toReturn.Add(result);
-                }
-
-                currentGenerationIndex++;
-            }
-
-            if (toReturn.Count < this.populationSize)
-            {
-                // Not everything mutates, crosses over, etc. So pick the best if we're short-staffed
-                var diff = this.populationSize - toReturn.Count;
-                toReturn.AddRange(currentGeneration.Take(diff).Select(s => s.Solution));
             }
 
             return toReturn;
