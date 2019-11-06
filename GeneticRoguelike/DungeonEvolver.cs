@@ -11,6 +11,7 @@ namespace GeneticRoguelike
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
         private const int DUNGEON_WIDTH = 80;
         private const int DUNGEON_HEIGHT = 28;
+        private const int NUMBER_OF_POINTS_TO_CALCULATE = 10;
                 
         private Random random = new Random();
 
@@ -20,6 +21,7 @@ namespace GeneticRoguelike
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
+            engine.SetSelectionMethod(Engine<List<DungeonOp>, GridMap>.TournamentSelection);
             engine.SetMutationMethod(this.Mutate);
             engine.OnGenerationCallback(callback);
             engine.Solve();
@@ -43,7 +45,7 @@ namespace GeneticRoguelike
             var toReturn = new List<DungeonOp>(input);
             var mutationOp = random.Next(100);
 
-            if (mutationOp < 75) // add a random op
+            if (mutationOp < 50) // add a random op
             {
                 var op = DungeonOp.CreateRandom();
                 var index = random.Next(input.Count);
@@ -104,7 +106,7 @@ namespace GeneticRoguelike
             // average distance (walking a path) from each point to each every point (10 * 9).
 
             // Generate ten points. Repeats are ignored.
-            var points = new List<GoRogue.Coord>(10);
+            var points = new List<GoRogue.Coord>(NUMBER_OF_POINTS_TO_CALCULATE);
             while (points.Count < points.Capacity)
             {
                 var x = random.Next(GridMap.TILES_WIDE);

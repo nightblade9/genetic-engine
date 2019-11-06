@@ -16,7 +16,7 @@ namespace GeneticEngine
         private float mutationRate;
         private float elitismPercent;
         private List<T> currentPopulation = new List<T>();
-        private Random random = new Random();
+        private static Random random = new Random();
         
         // Given two parents, create one child
         // private Func<T, T, T> oneChildCrossOverMethod = null;
@@ -24,8 +24,28 @@ namespace GeneticEngine
         private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
         private Func<T, T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
+        private Func<IList<CandidateSolution<List<T>>>, CandidateSolution<List<T>>> SelectionMethod = null;
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
         CandidateSolution<T> best = null;
+
+        public static CandidateSolution<List<T>> TournamentSelection(IList<CandidateSolution<List<T>>> currentGeneration)
+        {
+            // Assumes a tournament of size=3
+            var candidates = new List<CandidateSolution<List<T>>>();
+            candidates.Add(RandomSelection(currentGeneration));
+            candidates.Add(RandomSelection(currentGeneration));
+            candidates.Add(RandomSelection(currentGeneration));
+            
+            var maxFitness = candidates.Max(c => c.Fitness);
+            var winner = candidates.Single(c => c.Fitness == maxFitness);
+            
+            return winner;
+        }
+
+        public static CandidateSolution<List<T>> RandomSelection(IList<CandidateSolution<List<T>>> currentGeneration)
+        {
+            return currentGeneration[random.Next(currentGeneration.Count)];
+        }
 
         public Engine(int populationSize, float elitismPercent, float crossOverRate, float mutationRate)
         {
@@ -83,6 +103,11 @@ namespace GeneticEngine
         public void SetFitnessMethod(Func<T, float> fitnessMethod)
         {
             this.calculateFitnessMethod = fitnessMethod;
+        }
+
+        public void SetSelectionMethod(Func<IList<CandidateSolution<List<T>>>, CandidateSolution<List<T>>> selectionMethod)
+        {
+            this.SelectionMethod = selectionMethod;
         }
 
         public void OnGenerationCallback(Action<int, CandidateSolution<T>> callback)
