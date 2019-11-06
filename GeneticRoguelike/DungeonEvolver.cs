@@ -11,12 +11,20 @@ namespace GeneticRoguelike
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
         private const int DUNGEON_WIDTH = 80;
         private const int DUNGEON_HEIGHT = 28;
-
+        
+        /*
+        private readonly GoRogue.Coord TopLeftCorner = new GoRogue.Coord(1, 1);
+        private readonly GoRogue.Coord TopRightCorner = new GoRogue.Coord(DUNGEON_WIDTH - 1, 1);
+        private readonly GoRogue.Coord BottomLeftCorner = new GoRogue.Coord(1, DUNGEON_HEIGHT - 1);
+        private readonly GoRogue.Coord BottomRightCorner = new GoRogue.Coord(DUNGEON_WIDTH - 1, DUNGEON_HEIGHT - 1);
+        private readonly GoRogue.Coord MapCenter = new GoRogue.Coord(DUNGEON_WIDTH / 2, DUNGEON_HEIGHT / 2);
+        */
+        
         private Random random = new Random();
 
-        public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>, float> callback)
+        public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
         {
-            var engine = new Engine<List<DungeonOp>, GridMap>(1000, 0.95f, 0.05f);
+            var engine = new Engine<List<DungeonOp>, GridMap>(800, 0.1f, 0.95f, 0.05f);
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
@@ -28,7 +36,7 @@ namespace GeneticRoguelike
         // Not part of the engine because it doesn't know if we want a tree, list, etc.
         private List<DungeonOp> CreateRandomDungeonOpList()
         {
-            var length = random.Next(3, 5);
+            var length = random.Next(5, 15);
             var toReturn = new List<DungeonOp>();
             while (toReturn.Count < length)
             {
@@ -43,13 +51,13 @@ namespace GeneticRoguelike
             var toReturn = new List<DungeonOp>(input);
             var mutationOp = random.Next(100);
 
-            if (mutationOp < 33) // add a random op
+            if (mutationOp < 75) // add a random op
             {
                 var op = DungeonOp.CreateRandom();
                 var index = random.Next(input.Count);
                 input.Insert(index, op);
             }
-            else if (mutationOp >= 33 && mutationOp < 66) // swap two elements
+            /*else if (mutationOp >= 33 && mutationOp < 66) // swap two elements
             {
                 var firstIndex = random.Next(toReturn.Count);
                 var secondIndex = random.Next(toReturn.Count);
@@ -57,7 +65,7 @@ namespace GeneticRoguelike
                 var temp = toReturn[firstIndex];
                 toReturn[firstIndex] = toReturn[secondIndex];
                 toReturn[secondIndex] = temp;
-            }
+            }*/
             else // remove random element
             {
                 if (toReturn.Count > MINIMUM_SOLUTION_SIZE)
@@ -94,14 +102,15 @@ namespace GeneticRoguelike
 
         private float CalculateFitness(List<DungeonOp> solution)
         {
-            // Perhaps the most costly part of all: generate a dungeon, pick ten random points, and calculate the 
-            // average distance (walking a path) from each point to each every point (10 * 9).
             var map = new GridMap();
             foreach (DungeonOp op in solution)
             {
                 op.Execute(map);
             }
-            
+
+            // Perhaps the most costly part of all: generate a dungeon, pick ten random points, and calculate the 
+            // average distance (walking a path) from each point to each every point (10 * 9).
+
             // Generate ten points. Repeats are ignored.
             var points = new List<GoRogue.Coord>(10);
             while (points.Count < 10)
@@ -131,7 +140,24 @@ namespace GeneticRoguelike
                 }
             }
 
-            return totalCalculated / numCalculated;
+            var average = totalCalculated / numCalculated;
+            return average;
+
+            /*
+            // Calculate the distance from each of the corners to the middle of the map
+            var astar = new AStar(map.Data, GoRogue.Distance.MANHATTAN);
+            var topLeft = astar.ShortestPath(TopLeftCorner, MapCenter)?.Length;
+            var topRight = astar.ShortestPath(TopRightCorner, MapCenter)?.Length;
+            var bottomLeft = astar.ShortestPath(BottomLeftCorner, MapCenter)?.Length;
+            var bottomRight = astar.ShortestPath(BottomRightCorner, MapCenter)?.Length;
+
+            var cornerDistances = (topLeft.HasValue ? topLeft.Value : 0) + 
+                (topRight.HasValue ? topRight.Value : 0) +
+                (bottomLeft.HasValue ? bottomLeft.Value : 0) +
+                (bottomRight.HasValue ? bottomRight.Value : 0);
+
+            return average + cornerDistances;
+            */
         }
     }
 }

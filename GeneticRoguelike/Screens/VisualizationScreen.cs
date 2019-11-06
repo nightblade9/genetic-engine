@@ -27,11 +27,11 @@ namespace GeneticRoguelike.Screens
             this.thread.Suspend();
         }
 
-        private void Redraw(int generation, CandidateSolution<List<DungeonOp>> data, float average)
+        private void Redraw(int generation, CandidateSolution<List<DungeonOp>> data)
         {
             this.Clear();
             
-            var status = $"Generation {generation}, FITNESS: best={data.Fitness}, average={average}, solution is {data.Solution.Count} ops";
+            var status = $"Generation {generation}, FITNESS: best={data.Fitness}, with {data.Solution.Count} ops";
             this.Print(0, STATUS_Y, status, Color.White);
             System.Console.WriteLine(status);
 

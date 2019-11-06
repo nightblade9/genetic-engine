@@ -14,6 +14,7 @@ namespace GeneticEngine
         private int populationSize;
         private float crossOverRate;
         private float mutationRate;
+        private float elitismPercent;
         private List<T> currentPopulation = new List<T>();
         private Random random = new Random();
         
@@ -23,10 +24,10 @@ namespace GeneticEngine
         private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
         private Func<T, T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
-        private Action<int, CandidateSolution<T>, float> onGenerationCallback = null;
+        private Action<int, CandidateSolution<T>> onGenerationCallback = null;
         CandidateSolution<T> best = null;
 
-        public Engine(int populationSize, float crossOverRate, float mutationRate)
+        public Engine(int populationSize, float elitismPercent, float crossOverRate, float mutationRate)
         {
             this.populationSize = populationSize;
             this.crossOverRate = crossOverRate;
@@ -50,7 +51,7 @@ namespace GeneticEngine
                 
                 if (this.onGenerationCallback != null)
                 {
-                    this.onGenerationCallback.Invoke(generation, best, average);
+                    this.onGenerationCallback.Invoke(generation, best);
                 }
             }
         }
@@ -84,7 +85,7 @@ namespace GeneticEngine
             this.calculateFitnessMethod = fitnessMethod;
         }
 
-        public void OnGenerationCallback(Action<int, CandidateSolution<T>, float> callback)
+        public void OnGenerationCallback(Action<int, CandidateSolution<T>> callback)
         {
             this.onGenerationCallback = callback;
         }
@@ -106,7 +107,11 @@ namespace GeneticEngine
 
         private List<T> CreateNextGeneration(IList<CandidateSolution<T>> currentGeneration)
         {
-            var toReturn = new List<T>();
+            var toReturn = new List<T>(this.populationSize);
+
+            // currentGeneration is sorted best (fitness score) to worst, so handle elitism first
+            var eliteCount = (int)(this.populationSize * this.elitismPercent);
+            toReturn.AddRange(currentGeneration.Take(eliteCount).Select(s => s.Solution));
 
             while (toReturn.Count < this.populationSize)
             {
