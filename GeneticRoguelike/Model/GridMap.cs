@@ -117,7 +117,7 @@ namespace GeneticRoguelike.Model
                     numSolids += this.Get(x, y + 1) == false ? 1 : 0;
                     numSolids += this.Get(x + 1, y + 1) == false ? 1 : 0;
 
-                    var newState = numSolids >= 4 && numSolids >= 6 ? false : true;
+                    var newState = numSolids >= 5 ? false : true;
                     newData[x, y] = newState;
                 }
             }

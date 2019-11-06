@@ -11,15 +11,7 @@ namespace GeneticRoguelike
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
         private const int DUNGEON_WIDTH = 80;
         private const int DUNGEON_HEIGHT = 28;
-        
-        /*
-        private readonly GoRogue.Coord TopLeftCorner = new GoRogue.Coord(1, 1);
-        private readonly GoRogue.Coord TopRightCorner = new GoRogue.Coord(DUNGEON_WIDTH - 1, 1);
-        private readonly GoRogue.Coord BottomLeftCorner = new GoRogue.Coord(1, DUNGEON_HEIGHT - 1);
-        private readonly GoRogue.Coord BottomRightCorner = new GoRogue.Coord(DUNGEON_WIDTH - 1, DUNGEON_HEIGHT - 1);
-        private readonly GoRogue.Coord MapCenter = new GoRogue.Coord(DUNGEON_WIDTH / 2, DUNGEON_HEIGHT / 2);
-        */
-        
+                
         private Random random = new Random();
 
         public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
@@ -113,7 +105,7 @@ namespace GeneticRoguelike
 
             // Generate ten points. Repeats are ignored.
             var points = new List<GoRogue.Coord>(10);
-            while (points.Count < 10)
+            while (points.Count < points.Capacity)
             {
                 var x = random.Next(GridMap.TILES_WIDE);
                 var y = random.Next(GridMap.TILES_HIGH);
@@ -142,22 +134,6 @@ namespace GeneticRoguelike
 
             var average = totalCalculated / numCalculated;
             return average;
-
-            /*
-            // Calculate the distance from each of the corners to the middle of the map
-            var astar = new AStar(map.Data, GoRogue.Distance.MANHATTAN);
-            var topLeft = astar.ShortestPath(TopLeftCorner, MapCenter)?.Length;
-            var topRight = astar.ShortestPath(TopRightCorner, MapCenter)?.Length;
-            var bottomLeft = astar.ShortestPath(BottomLeftCorner, MapCenter)?.Length;
-            var bottomRight = astar.ShortestPath(BottomRightCorner, MapCenter)?.Length;
-
-            var cornerDistances = (topLeft.HasValue ? topLeft.Value : 0) + 
-                (topRight.HasValue ? topRight.Value : 0) +
-                (bottomLeft.HasValue ? bottomLeft.Value : 0) +
-                (bottomRight.HasValue ? bottomRight.Value : 0);
-
-            return average + cornerDistances;
-            */
         }
     }
 }
