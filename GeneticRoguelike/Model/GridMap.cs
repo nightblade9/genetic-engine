@@ -23,7 +23,15 @@ namespace GeneticRoguelike.Model
         public GridMap()
         {
             this.random = new Random(gridMapRandomizer.Next());
-            this.FillWithRandomTiles();
+
+            for (int y = 0; y < TILES_HIGH; y++) {
+                for (int x = 0; x < TILES_WIDE; x++) {
+                    this.Data[x, y]  = true; // empty to start
+                }
+            }
+
+            // Filled by default
+            /*this.FillWithRandomTiles();
 
             // create a border
             for (int x = 0; x < TILES_WIDE; x++)
@@ -35,7 +43,7 @@ namespace GeneticRoguelike.Model
             {
                 this.Data[0, y] = false;
                 this.Data[TILES_WIDE - 1, y] = false;
-            }
+            }*/
         }
 
         public bool Get(int x, int y)
@@ -74,9 +82,9 @@ namespace GeneticRoguelike.Model
             int stopX = isHorizontal ? startX + size : startX;
             int stopY = isHorizontal ? startY : startY + size;
 
-            for (var y = startY; y < stopY; y++)
+            for (var y = startY; y <= stopY; y++)
             {
-                for (int x = startX; x < stopX; x++)
+                for (int x = startX; x <= stopX; x++)
                 {
                     this.Set(x, y, newState);
                 }
@@ -117,7 +125,7 @@ namespace GeneticRoguelike.Model
                     numSolids += this.Get(x, y + 1) == false ? 1 : 0;
                     numSolids += this.Get(x + 1, y + 1) == false ? 1 : 0;
 
-                    var newState = numSolids == 4 || numSolids == 5 ? false : true;
+                    var newState = numSolids >= 4 && numSolids >= 6 ? false : true;
                     newData[x, y] = newState;
                 }
             }
