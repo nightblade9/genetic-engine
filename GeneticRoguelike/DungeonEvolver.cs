@@ -27,7 +27,7 @@ namespace GeneticRoguelike
         // Not part of the engine because it doesn't know if we want a tree, list, etc.
         private List<DungeonOp> CreateRandomDungeonOpList()
         {
-            var length = random.Next(5, 16);
+            var length = random.Next(3, 5);
             var toReturn = new List<DungeonOp>();
             while (toReturn.Count < length)
             {
