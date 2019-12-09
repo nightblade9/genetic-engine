@@ -52,6 +52,7 @@ namespace GeneticEngine
             this.populationSize = populationSize;
             this.crossOverRate = crossOverRate;
             this.mutationRate = mutationRate;
+            this.elitismPercent = elitismPercent;
         }
 
         public void Solve()
