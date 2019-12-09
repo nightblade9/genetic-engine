@@ -10,6 +10,7 @@ namespace GeneticRoguelike
         
         static void Main(string[] args)
         {
+            /*
             SadConsole.Game.Create("Fonts/IBM.font", WIDTH, HEIGHT);
 
             SadConsole.Game.OnInitialize = () =>
@@ -25,6 +26,9 @@ namespace GeneticRoguelike
             SadConsole.Game.Instance.Run();
 
             SadConsole.Game.Instance.Dispose();
+            */
+
+            new WeightValueSolver().EvolveSolution((generation, solution) => System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}"));
         }
     }
 }
