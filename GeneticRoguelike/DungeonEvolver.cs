@@ -17,7 +17,7 @@ namespace GeneticRoguelike
 
         public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
         {
-            var engine = new Engine<List<DungeonOp>, GridMap>(800, 0.1f, 0.95f, 0.05f);
+            var engine = new Engine<List<DungeonOp>, GridMap>(1000, 0.1f, 0.95f, 0.05f);
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
@@ -51,7 +51,7 @@ namespace GeneticRoguelike
                 var index = random.Next(input.Count);
                 input.Insert(index, op);
             }
-            /*else if (mutationOp >= 33 && mutationOp < 66) // swap two elements
+            else if (mutationOp >= 33 && mutationOp < 66) // swap two elements
             {
                 var firstIndex = random.Next(toReturn.Count);
                 var secondIndex = random.Next(toReturn.Count);
@@ -59,7 +59,7 @@ namespace GeneticRoguelike
                 var temp = toReturn[firstIndex];
                 toReturn[firstIndex] = toReturn[secondIndex];
                 toReturn[secondIndex] = temp;
-            }*/
+            }
             else // remove random element
             {
                 if (toReturn.Count > MINIMUM_SOLUTION_SIZE)
