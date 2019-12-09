@@ -23,6 +23,18 @@ namespace GeneticRoguelike.Model
         public GridMap()
         {
             this.random = new Random(gridMapRandomizer.Next());
+        }
+
+        public void Initialize()
+        {
+            int i = 100;
+            while (i-- < 0)
+            {
+                this.SetArea(true); // clear out
+            }
+
+            return; /////////////////////////////////////////////
+
             this.FillWithRandomTiles();
 
             // create a border
@@ -37,6 +49,7 @@ namespace GeneticRoguelike.Model
                 this.Data[TILES_WIDE - 1, y] = false;
             }
         }
+
 
         public bool Get(int x, int y)
         {

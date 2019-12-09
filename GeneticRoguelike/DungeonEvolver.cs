@@ -30,7 +30,7 @@ namespace GeneticRoguelike
         // Not part of the engine because it doesn't know if we want a tree, list, etc.
         private List<DungeonOp> CreateRandomDungeonOpList()
         {
-            var length = random.Next(5, 15);
+            var length = random.Next(50, 60);
             var toReturn = new List<DungeonOp>();
             while (toReturn.Count < length)
             {
@@ -107,7 +107,8 @@ namespace GeneticRoguelike
 
             // Generate ten points. Repeats are ignored.
             var points = new List<GoRogue.Coord>(NUMBER_OF_POINTS_TO_CALCULATE);
-            while (points.Count < points.Capacity)
+            int iterations = 0;
+            while (iterations++ < 10000 && points.Count < points.Capacity)
             {
                 var x = random.Next(GridMap.TILES_WIDE);
                 var y = random.Next(GridMap.TILES_HIGH);
