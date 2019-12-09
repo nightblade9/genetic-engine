@@ -135,7 +135,7 @@ namespace GeneticRoguelike
                 }
             }
 
-            var average = totalCalculated / numCalculated;
+            var average = numCalculated == 0 ? 0 : totalCalculated / numCalculated;
             return average;
         }
     }
