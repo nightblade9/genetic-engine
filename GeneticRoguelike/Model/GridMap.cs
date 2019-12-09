@@ -25,32 +25,6 @@ namespace GeneticRoguelike.Model
             this.random = new Random(gridMapRandomizer.Next());
         }
 
-        public void Initialize()
-        {
-            int i = 100;
-            while (i-- < 0)
-            {
-                this.SetArea(true); // clear out
-            }
-
-            return; /////////////////////////////////////////////
-
-            this.FillWithRandomTiles();
-
-            // create a border
-            for (int x = 0; x < TILES_WIDE; x++)
-            {
-                this.Data[x, 0] = false;
-                this.Data[x, TILES_HIGH - 1] = false;
-            }
-            for (int y = 0; y < TILES_HIGH; y++)
-            {
-                this.Data[0, y] = false;
-                this.Data[TILES_WIDE - 1, y] = false;
-            }
-        }
-
-
         public bool Get(int x, int y)
         {
             this.ValidateCoordinates(x, y);
@@ -109,6 +83,46 @@ namespace GeneticRoguelike.Model
                 for (var x = startX; x < startX + width; x++)
                 {
                     this.Set(x, y, newState);
+                }
+            }
+        }
+
+        internal void SetRandomWalk(int numSteps, bool newState)
+        {
+            var x = random.Next(TILES_WIDE);
+            var y = random.Next(TILES_HIGH);
+            var iterations = 1000;
+
+            while (iterations-- > 0 && numSteps > 0)
+            {
+                if (this.Get(x, y) != newState)
+                {
+                    this.Set(x, y, newState);
+                    numSteps--;
+                }
+
+                double next = random.NextDouble();
+                if (next < 0.25f)
+                {
+                    x -= 1;
+                }
+                else if (next < 0.5)
+                {
+                    x += 1;
+                }
+                else if (next < 0.75)
+                {
+                    y -= 1;
+                }
+                else
+                {
+                    y += 1;
+                }
+
+                if (x < 0 || x >= TILES_WIDE || y < 0 || y >= TILES_HIGH)
+                {
+                    // walked off the edge. Just quit.
+                    iterations = 0;
                 }
             }
         }
