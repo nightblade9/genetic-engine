@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticRoguelike", "Genetic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticEngine", "GeneticEngine\GeneticEngine.csproj", "{D5D36A59-B241-4CF6-9CCE-74471A4FD9A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticEngine.UnitTests", "GeneticEngine.UnitTests\GeneticEngine.UnitTests.csproj", "{BD3466D7-CB5D-43DC-93F4-370502E99DBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{D5D36A59-B241-4CF6-9CCE-74471A4FD9A6}.Release|x64.Build.0 = Release|Any CPU
 		{D5D36A59-B241-4CF6-9CCE-74471A4FD9A6}.Release|x86.ActiveCfg = Release|Any CPU
 		{D5D36A59-B241-4CF6-9CCE-74471A4FD9A6}.Release|x86.Build.0 = Release|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Release|x64.Build.0 = Release|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD3466D7-CB5D-43DC-93F4-370502E99DBC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
