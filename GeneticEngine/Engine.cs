@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,10 @@ namespace GeneticEngine
         private Func<T, float> calculateFitnessMethod = null;
         private Func<IList<CandidateSolution<List<T>>>, CandidateSolution<List<T>>> SelectionMethod = null;
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
-        CandidateSolution<T> best = null;
+        private CandidateSolution<T> best = null;
+
+        private IList<CandidateSolution<T>> DEBUG_PREVIOUS_GEN;
+        private float DEBUG_PREVIOUS_FITNESS = 0;
 
         public static CandidateSolution<List<T>> TournamentSelection(IList<CandidateSolution<List<T>>> currentGeneration)
         {
@@ -63,7 +67,16 @@ namespace GeneticEngine
             {
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
-                var average = fitnessScores.Average(f => f.Fitness);
+
+                if (best.Fitness < DEBUG_PREVIOUS_FITNESS)
+                {
+                    //throw new InvalidOperationException($"GA broke: fitness dropped from {DEBUG_PREVIOUS_FITNESS} to {best.Fitness}!!!");
+                }
+
+                DEBUG_PREVIOUS_FITNESS = best.Fitness;
+                DEBUG_PREVIOUS_GEN = fitnessScores.OrderByDescending(a => a.Fitness).ToList();
+                var overlap = fitnessScores.Where(a => DEBUG_PREVIOUS_GEN.Any(b => b.Id == a.Id));
+                Console.WriteLine($"{overlap.Count()} from previous gen made it to this gen");
 
                 var nextGeneration = this.CreateNextGeneration(fitnessScores);
                 this.currentPopulation = nextGeneration;
@@ -113,24 +126,29 @@ namespace GeneticEngine
         // If this is wrong, prepare for the worst race conditions EVAR.
         private IList<CandidateSolution<T>> EvaulateFitness()
         {
-            var toReturn = new List<CandidateSolution<T>>();
+            // List<T> is not thread-safe, so adding to it results in less elements
+            // than the full population size.
+            var evaluated = new ConcurrentBag<CandidateSolution<T>>();
 
             Parallel.ForEach(this.currentPopulation, item =>
             {
                 var score = this.calculateFitnessMethod(item);
-                toReturn.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
+                evaluated.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
             });
 
-            return toReturn.OrderByDescending(t => t.Fitness).ToList();
+            return evaluated.OrderByDescending(t => t.Fitness).ToList();
         }
 
         private List<T> CreateNextGeneration(IList<CandidateSolution<T>> currentGeneration)
         {
             var toReturn = new List<T>(this.populationSize);
 
-            // currentGeneration is sorted best (fitness score) to worst, so handle elitism first
             var eliteCount = (int)(this.populationSize * this.elitismPercent);
-            toReturn.AddRange(currentGeneration.Take(eliteCount).Select(s => s.Solution));
+            
+            var elites = currentGeneration.OrderByDescending(s => s.Fitness).Take(eliteCount);
+            toReturn.AddRange(elites.Select(s => s.Solution));
+
+            Console.WriteLine($"Elite {eliteCount} average fitness: {elites.Average(a => a.Fitness)}, top={elites.First().Fitness}");
 
             while (toReturn.Count < this.populationSize)
             {
