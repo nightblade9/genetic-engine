@@ -26,9 +26,7 @@ namespace GeneticEngine
         private Func<IList<CandidateSolution<List<T>>>, CandidateSolution<List<T>>> SelectionMethod = null;
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
         private CandidateSolution<T> best = null;
-
-        private IList<CandidateSolution<T>> DEBUG_PREVIOUS_GEN;
-        private float DEBUG_PREVIOUS_FITNESS = 0;
+        private List<float> lastTenGenerationScores = new List<float>();
 
         public static CandidateSolution<List<T>> TournamentSelection(IList<CandidateSolution<List<T>>> currentGeneration)
         {
@@ -62,30 +60,40 @@ namespace GeneticEngine
             // TODO: validate population is created, cross-over/mutation methods are set, etc.
 
             var generation = 0;
+            float averageDifference = 999;
 
-            while (generation++ < 100) // Arbitrary. TODO: stop if fitness plateaus.
+            while (averageDifference > 1)
             {
+                generation++;
+                
+                // Calculate fitness
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
 
-                if (best.Fitness < DEBUG_PREVIOUS_FITNESS)
+                // Add a record of our best (keep only 10)
+                lastTenGenerationScores.Add(best.Fitness);
+                while (lastTenGenerationScores.Count > 10)
                 {
-                    //throw new InvalidOperationException($"GA broke: fitness dropped from {DEBUG_PREVIOUS_FITNESS} to {best.Fitness}!!!");
+                    lastTenGenerationScores.RemoveAt(0);
+                }
+                // Update what the average difference is
+                if (lastTenGenerationScores.Count == 10)
+                {
+                    var average = lastTenGenerationScores.Average();
+                    averageDifference = lastTenGenerationScores.Select(s => Math.Abs(s - average)).Sum();
                 }
 
-                DEBUG_PREVIOUS_FITNESS = best.Fitness;
-                DEBUG_PREVIOUS_GEN = fitnessScores.OrderByDescending(a => a.Fitness).ToList();
-                var overlap = fitnessScores.Where(a => DEBUG_PREVIOUS_GEN.Any(b => b.Id == a.Id));
-                Console.WriteLine($"{overlap.Count()} from previous gen made it to this gen");
-
+                // Create the next generation
                 var nextGeneration = this.CreateNextGeneration(fitnessScores);
                 this.currentPopulation = nextGeneration;
                 
                 if (this.onGenerationCallback != null)
                 {
                     this.onGenerationCallback.Invoke(generation, best);
-                }
+                }                
             }
+
+            Console.WriteLine($"Solved in {generation} generations, best fitness is {best.Fitness}; solution is {best.Solution}");
         }
 
         public void CreateInitialPopulation(Func<T> factoryMethod)
@@ -147,8 +155,6 @@ namespace GeneticEngine
             
             var elites = currentGeneration.OrderByDescending(s => s.Fitness).Take(eliteCount);
             toReturn.AddRange(elites.Select(s => s.Solution));
-
-            Console.WriteLine($"Elite {eliteCount} average fitness: {elites.Average(a => a.Fitness)}, top={elites.First().Fitness}");
 
             while (toReturn.Count < this.populationSize)
             {
