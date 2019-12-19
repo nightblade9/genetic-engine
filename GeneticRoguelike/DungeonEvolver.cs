@@ -72,7 +72,7 @@ namespace GeneticRoguelike
             return toReturn;
         }
 
-        private Tuple<List<DungeonOp>, List<DungeonOp>> CrossOver(List<DungeonOp> parent1, List<DungeonOp> parent2)
+        private List<List<DungeonOp>> CrossOver(List<DungeonOp> parent1, List<DungeonOp> parent2)
         {
             // Ah, DungeonOp, ah; we have two lists of different sizes. So pick a point in the middle of each list (not the first/last),
             // and then swap everything. So if we have ABCDEFGH and 1234, and we pick F and 2, we end up with ABCDE234 and 1FGH
@@ -91,7 +91,7 @@ namespace GeneticRoguelike
             var child2 = new List<DungeonOp>(p2Start);
             child2.AddRange(p2End);
 
-            return new Tuple<List<DungeonOp>, List<DungeonOp>>(child1, child2);
+            return new List<List<DungeonOp>>() { child1, child2 };
         }
 
         private float CalculateFitness(List<DungeonOp> solution)

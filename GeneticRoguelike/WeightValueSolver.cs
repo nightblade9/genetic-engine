@@ -62,7 +62,7 @@ namespace GeneticRoguelike
             return toReturn;
         }
 
-        private Tuple<List<Valuable>, List<Valuable>> CrossOver(List<Valuable> parent1, List<Valuable> parent2)
+        private List<List<Valuable>> CrossOver(List<Valuable> parent1, List<Valuable> parent2)
         {
             var child1 = new List<Valuable>(parent1);
             var child2 = new List<Valuable>(parent2);
@@ -78,7 +78,7 @@ namespace GeneticRoguelike
                 }
             }
 
-            return new Tuple<List<Valuable>, List<Valuable>>(child1, child2);
+            return new List<List<Valuable>>() { child1, child2 };
         }
 
         private float CalculateFitness(List<Valuable> solution)

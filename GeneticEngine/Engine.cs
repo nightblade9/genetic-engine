@@ -18,10 +18,8 @@ namespace GeneticEngine
         private List<T> currentPopulation = new List<T>();
         private static Random random = new Random();
         
-        // Given two parents, create one child
-        // private Func<T, T, T> oneChildCrossOverMethod = null;
-        // Given two parents, create two children
-        private Func<T, T, Tuple<T, T>> twoChildCrossOverMethod = null;
+        // Given two parents, create one or more children
+        private Func<T, T, List<T>> crossOverMethod = null;
         private Func<T, T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
         private Func<IList<CandidateSolution<List<T>>>, CandidateSolution<List<T>>> SelectionMethod = null;
@@ -86,14 +84,9 @@ namespace GeneticEngine
             }
         }
 
-        // public void SetCrossOverMethod(Func<T, T, T> oneChildMethod)
-        // {
-        //     this.oneChildCrossOverMethod = oneChildMethod;
-        // }
-
-        public void SetCrossOverMethod(Func<T, T, Tuple<T, T>> twoChildMethod)
+        public void SetCrossOverMethod(Func<T, T, List<T>> crossOverMethod)
         {
-            this.twoChildCrossOverMethod = twoChildMethod;
+            this.crossOverMethod = crossOverMethod;
         }
 
         public void SetMutationMethod(Func<T, T> mutationMethod)
@@ -141,31 +134,33 @@ namespace GeneticEngine
 
             while (toReturn.Count < this.populationSize)
             {
-                Tuple<T, T> result;
+                List<T> result;
                 var parent1 = currentGeneration[random.Next(currentGeneration.Count)];
                 var parent2 = currentGeneration[random.Next(currentGeneration.Count)];
 
                 if (random.NextDouble() <= this.crossOverRate)
                 {
-                    result = this.twoChildCrossOverMethod.Invoke(parent1.Solution, parent2.Solution);
+                    result = this.crossOverMethod.Invoke(parent1.Solution, parent2.Solution);
                 }
                 else
                 {
-                    result = new Tuple<T, T>(parent1.Solution, parent2.Solution);
+                    result = new List<T>() { parent1.Solution, parent2.Solution };
                 }
 
-                if (random.NextDouble() <= this.mutationRate)
+                foreach (var child in result)
                 {
-                    this.mutationMethod(result.Item1);
+                    if (random.NextDouble() <= this.mutationRate)
+                    {
+                        this.mutationMethod(child);
+                    }
+
+                    if (random.NextDouble() <= this.mutationRate)
+                    {
+                        this.mutationMethod(child);
+                    }
                 }
 
-                if (random.NextDouble() <= this.mutationRate)
-                {
-                    this.mutationMethod(result.Item2);
-                }
-
-                toReturn.Add(result.Item1);
-                toReturn.Add(result.Item2);
+                toReturn.AddRange(result);
             }
 
             return toReturn;
