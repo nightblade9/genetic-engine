@@ -70,8 +70,9 @@ namespace GeneticEngine
 
             var generation = 0;
             float averageDifference = 999;
+            float lastGenerationScore = 0;
 
-            while (averageDifference > 1)
+            while (lastGenerationScore == 0 || averageDifference > 1)
             {
                 generation++;
                 
@@ -81,6 +82,7 @@ namespace GeneticEngine
 
                 // Add a record of our best (keep only 10)
                 lastTenGenerationScores.Add(best.Fitness);
+                lastGenerationScore = best.Fitness;
                 while (lastTenGenerationScores.Count > 10)
                 {
                     lastTenGenerationScores.RemoveAt(0);
