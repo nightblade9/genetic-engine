@@ -14,6 +14,7 @@ namespace GeneticRoguelike.Screens
         private readonly int STATUS_Y;
         private Thread thread;
         private DateTime startedOn;
+        private Object drawLock = new Object();
 
         public VisualizationScreen(int width, int height) : base(width, height)
         {
@@ -34,11 +35,6 @@ namespace GeneticRoguelike.Screens
         {
             var fitness = bestSolution.Fitness;
             var data = new List<DungeonOp>(bestSolution.Solution);
-            this.Clear();
-            
-            var status = $"{(DateTime.Now - this.startedOn).TotalSeconds}s | Generation {generation}, FITNESS: best={fitness}, with {data.Count} ops";
-            this.Print(0, STATUS_Y, status, Color.White);
-            System.Console.WriteLine(status);
 
             var map = new GridMap();
             foreach (var op in data)
@@ -46,13 +42,22 @@ namespace GeneticRoguelike.Screens
                 op.Execute(map);
             }
 
-            for (var y = 0; y < this.Height - 1; y++)
+            lock (drawLock)
             {
-                for (var x = 0; x < this.Width; x++)
+                this.Clear();
+                
+                var status = $"{(DateTime.Now - this.startedOn).TotalSeconds}s | Generation {generation}, FITNESS: best={fitness}, with {data.Count} ops";
+                this.Print(0, STATUS_Y, status, Color.White);
+                System.Console.WriteLine(status);
+
+                for (var y = 0; y < this.Height - 1; y++)
                 {
-                    var text = map.Get(x, y) ? "." : "#";
-                    var colour = text == "#" ? WALL_COLOUR : FLOOR_COLOUR;
-                    this.Print(x, y, text, colour);
+                    for (var x = 0; x < this.Width; x++)
+                    {
+                        var text = map.Get(x, y) ? "." : "#";
+                        var colour = text == "#" ? WALL_COLOUR : FLOOR_COLOUR;
+                        this.Print(x, y, text, colour);
+                    }
                 }
             }
         }

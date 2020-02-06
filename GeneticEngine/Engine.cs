@@ -9,7 +9,6 @@ namespace GeneticEngine
     /// <summary>
     /// THE genetic engine. Creates a population, evaluates fitness, cross-overs, mutates, repeats until fitness stabilizes.
     /// Note that the type T is your solution candidate, and S is your state. (eg. T is list of ops, S is the dungeon state).
-    /// Note that it has many baked-in assumptions that your solution is a list of T, and not some more generic structure.
     /// </summary>
     public class Engine<T, S>
     {
@@ -26,7 +25,7 @@ namespace GeneticEngine
         private Func<T, float> calculateFitnessMethod = null;
         
         // Set of solutions in, and a single solution returned
-        private Func<IList<CandidateSolution<T>>, CandidateSolution<T>> SelectionMethod = null;
+        private Func<IList<CandidateSolution<T>>, CandidateSolution<T>> selectionMethod = null;
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
         private CandidateSolution<T> best = null;
         private List<float> lastTenGenerationScores = new List<float>();
@@ -66,7 +65,26 @@ namespace GeneticEngine
 
         public void Solve()
         {
-            // TODO: validate population is created, cross-over/mutation methods are set, etc.
+            if (!this.currentPopulation.Any())
+            {
+                throw new InvalidOperationException("Please call CreateInitialPopulation before calling Solve");
+            }
+            else if (this.calculateFitnessMethod == null)
+            {
+                throw new InvalidOperationException("Please call SetFitnessMethod before calling Solve");
+            }
+            else if (this.crossOverMethod == null)
+            {
+                throw new InvalidOperationException("Please call SetCrossOverMethod before calling Solve");
+            }
+            else if (this.selectionMethod == null)
+            {
+                throw new InvalidOperationException("Please call SetSelectionMethod before calling Solve");
+            }
+            else if (this.mutationMethod == null)
+            {
+                throw new InvalidOperationException("Please call SetMutationMethod before calling Solve");
+            }
 
             var generation = 0;
             float averageDifference = 999;
@@ -146,7 +164,7 @@ namespace GeneticEngine
         /// </summary>
         public void SetSelectionMethod(Func<IList<CandidateSolution<T>>, CandidateSolution<T>> selectionMethod)
         {
-            this.SelectionMethod = selectionMethod;
+            this.selectionMethod = selectionMethod;
         }
 
         /// <summary>
