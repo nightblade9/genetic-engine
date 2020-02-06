@@ -25,9 +25,9 @@ namespace GeneticRoguelike
             engine.CreateInitialPopulation(this.CreateRandomDungeonOpList);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
-            engine.SetSelectionMethod(Engine<List<DungeonOp>, GridMap>.TournamentSelection);
+            engine.SetSelectionMethod(engine.TournamentSelection);
             engine.SetMutationMethod(this.Mutate);
-            engine.OnGenerationCallback(callback);
+            engine.SetOnGenerationCallback(callback);
             engine.Solve();
         }
 

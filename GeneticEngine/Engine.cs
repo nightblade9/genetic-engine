@@ -19,7 +19,10 @@ namespace GeneticEngine
         private float elitismPercent;
         
         private List<T> currentPopulation = new List<T>();
+        
+        // Not thread saff. Never used in multiple threads without a lock.
         private static Random random = new Random();
+        private static object randomLock = new Object();
         
         // Given two parents, create one or more children
         private Func<T, T, List<T>> crossOverMethod = null;
@@ -31,37 +34,6 @@ namespace GeneticEngine
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
         private CandidateSolution<T> best = null;
         private List<float> lastTenGenerationScores = new List<float>();
-
-        /// <summary>
-        /// Given a list of candidates, randomly selects three and return the fittest one.
-        /// </summary>
-        internal CandidateSolution<T> TournamentSelection(IList<CandidateSolution<T>> currentGeneration)
-        {
-            // Assumes a tournament of size=3
-            if (currentGeneration == null || !currentGeneration.Any())
-            {
-                throw new ArgumentException("There are no candidate solutions to tournament-select from.");
-            }
-
-            var candidates = new List<CandidateSolution<T>>();
-            while (candidates.Count < this.tournamentSize)
-            {
-                candidates.Add(RandomSelection(currentGeneration));
-            }
-                        
-            var maxFitness = candidates.Max(c => c.Fitness);
-            var winner = candidates.Single(c => c.Fitness == maxFitness);
-            
-            return winner;
-        }
-
-        /// <summary>
-        /// Given the current generation of candidates, return one at random.
-        /// </summary>
-        public static CandidateSolution<T> RandomSelection(IList<CandidateSolution<T>> currentGeneration)
-        {
-            return currentGeneration[random.Next(currentGeneration.Count)];
-        }
 
         public Engine(int populationSize, float elitismPercent, float crossOverRate, float mutationRate, int tournamentSize = 3)
         {
@@ -168,6 +140,33 @@ namespace GeneticEngine
         }
 
         /// <summary>
+        /// Given a list of candidates, randomly selects three and return the fitest one.
+        /// Public so you can call <c>engine.SetSelectionMethod(engine.TournamentSelection)</c>.
+        /// </summary>
+        public CandidateSolution<T> TournamentSelection(IList<CandidateSolution<T>> currentGeneration)
+        {
+            // Assumes a tournament of size=3
+            if (currentGeneration == null || !currentGeneration.Any())
+            {
+                throw new ArgumentException("There are no candidate solutions to tournament-select from.");
+            }
+
+            var candidates = new List<CandidateSolution<T>>();
+            while (candidates.Count < this.tournamentSize)
+            {
+                lock(randomLock) {
+                    candidates.Add(currentGeneration[random.Next(currentGeneration.Count)]);
+                }
+            }
+                        
+            var maxFitness = candidates.Max(c => c.Fitness);
+            // If we picked the same candidate multiple times, cool, just take any of them with max fitness
+            var winner = candidates.First(c => c.Fitness == maxFitness);
+            
+            return winner;
+        }
+
+        /// <summary>
         /// Sets the selection method used when picking the fittest candidate solution from a set of solutions.
         /// The method takes a list of candidate solutions as input, and returns a single one as output.
         /// </summary>
@@ -180,7 +179,7 @@ namespace GeneticEngine
         /// Set a callback that fires every time we finish evaluating a generation.
         /// The callback includes the generation number (eg. 3), and the best solution candidate of that generation.
         /// </summary>
-        public void OnGenerationCallback(Action<int, CandidateSolution<T>> callback)
+        public void SetOnGenerationCallback(Action<int, CandidateSolution<T>> callback)
         {
             this.onGenerationCallback = callback;
         }
@@ -216,31 +215,33 @@ namespace GeneticEngine
             while (toReturn.Count < this.populationSize)
             {
                 List<T> result;
-                var parent1 = currentGeneration[random.Next(currentGeneration.Count)];
-                var parent2 = currentGeneration[random.Next(currentGeneration.Count)];
+                lock (randomLock)
+                {
+                    var parent1 = currentGeneration[random.Next(currentGeneration.Count)];
+                    var parent2 = currentGeneration[random.Next(currentGeneration.Count)];
 
-                if (random.NextDouble() <= this.crossOverRate)
-                {
-                    result = this.crossOverMethod.Invoke(parent1.Solution, parent2.Solution);
-                }
-                else
-                {
-                    result = new List<T>() { parent1.Solution, parent2.Solution };
-                }
-
-                foreach (var child in result)
-                {
-                    if (random.NextDouble() <= this.mutationRate)
+                    if (random.NextDouble() <= this.crossOverRate)
                     {
-                        this.mutationMethod(child);
+                        result = this.crossOverMethod.Invoke(parent1.Solution, parent2.Solution);
+                    }
+                    else
+                    {
+                        result = new List<T>() { parent1.Solution, parent2.Solution };
                     }
 
-                    if (random.NextDouble() <= this.mutationRate)
+                    foreach (var child in result)
                     {
-                        this.mutationMethod(child);
+                        if (random.NextDouble() <= this.mutationRate)
+                        {
+                            this.mutationMethod(child);
+                        }
+
+                        if (random.NextDouble() <= this.mutationRate)
+                        {
+                            this.mutationMethod(child);
+                        }
                     }
                 }
-
                 toReturn.AddRange(result);
             }
 
