@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using GeneticEngine;
@@ -12,6 +13,7 @@ namespace GeneticRoguelike.Screens
         private readonly Color FLOOR_COLOUR = new Color(64, 64, 64);
         private readonly int STATUS_Y;
         private Thread thread;
+        private DateTime startedOn;
 
         public VisualizationScreen(int width, int height) : base(width, height)
         {
@@ -20,6 +22,7 @@ namespace GeneticRoguelike.Screens
             var evolver = new DungeonEvolver();
             this.thread = new Thread(() => evolver.EvolveSolution(this.Redraw));
             this.thread.Start();
+            startedOn = DateTime.Now;
         }
 
         public void ShutDown()
@@ -27,16 +30,18 @@ namespace GeneticRoguelike.Screens
             this.thread.Suspend();
         }
 
-        private void Redraw(int generation, CandidateSolution<List<DungeonOp>> data)
+        private void Redraw(int generation, CandidateSolution<List<DungeonOp>> bestSolution)
         {
+            var fitness = bestSolution.Fitness;
+            var data = new List<DungeonOp>(bestSolution.Solution);
             this.Clear();
             
-            var status = $"Generation {generation}, FITNESS: best={data.Fitness}, with {data.Solution.Count} ops";
+            var status = $"{(DateTime.Now - this.startedOn).TotalSeconds}s | Generation {generation}, FITNESS: best={fitness}, with {data.Count} ops";
             this.Print(0, STATUS_Y, status, Color.White);
             System.Console.WriteLine(status);
 
             var map = new GridMap();
-            foreach (var op in data.Solution)
+            foreach (var op in data)
             {
                 op.Execute(map);
             }
