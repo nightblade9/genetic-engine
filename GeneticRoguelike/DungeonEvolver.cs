@@ -13,6 +13,10 @@ namespace GeneticRoguelike
         private const int DUNGEON_HEIGHT = 28;
         private const int NUMBER_OF_POINTS_TO_CALCULATE = 10;
                 
+        // Lock access to the RNG because it's expensive to create and not thread-safe; if accessed
+        // from mutliple threads, Next() just returns 0 all the time (which is why we see best=0).
+        // See: https://docs.microsoft.com/en-us/dotnet/api/system.random?view=netframework-4.8
+        private Object randomLock = new Object();
         private Random random = new Random();
 
         public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
@@ -110,8 +114,18 @@ namespace GeneticRoguelike
             int iterations = 0;
             while (iterations++ < 10000 && points.Count < points.Capacity)
             {
-                var x = random.Next(GridMap.TILES_WIDE);
-                var y = random.Next(GridMap.TILES_HIGH);
+                int x = 0;
+                int y = 0;
+
+                // Since we're doing this from a Parallel.ForEach, if we don't lock on random,
+                // it keeps returning zero; we end up with 10k iterations checking (0, 0) every time.
+                //  There doesn't seem to be much performance penalty to doing this.
+                lock (randomLock)
+                {
+                    x = random.Next(GridMap.TILES_WIDE);
+                    y = random.Next(GridMap.TILES_HIGH);
+                }
+
                 var next = new GoRogue.Coord(x, y);
                 // Make sure we get walkable points
                 if (map.Get(x, y) == true && !points.Contains(next))
