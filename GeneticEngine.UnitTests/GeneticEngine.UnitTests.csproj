@@ -10,4 +10,8 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GeneticEngine\GeneticEngine.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -12,10 +12,12 @@ namespace GeneticEngine
     /// </summary>
     public class Engine<T, S>
     {
+        private int tournamentSize;
         private int populationSize;
         private float crossOverRate;
         private float mutationRate;
         private float elitismPercent;
+        
         private List<T> currentPopulation = new List<T>();
         private static Random random = new Random();
         
@@ -33,14 +35,20 @@ namespace GeneticEngine
         /// <summary>
         /// Given a list of candidates, randomly selects three and return the fittest one.
         /// </summary>
-        public static CandidateSolution<T> TournamentSelection(IList<CandidateSolution<T>> currentGeneration)
+        internal CandidateSolution<T> TournamentSelection(IList<CandidateSolution<T>> currentGeneration)
         {
             // Assumes a tournament of size=3
+            if (currentGeneration == null || !currentGeneration.Any())
+            {
+                throw new ArgumentException("There are no candidate solutions to tournament-select from.");
+            }
+
             var candidates = new List<CandidateSolution<T>>();
-            candidates.Add(RandomSelection(currentGeneration));
-            candidates.Add(RandomSelection(currentGeneration));
-            candidates.Add(RandomSelection(currentGeneration));
-            
+            while (candidates.Count < this.tournamentSize)
+            {
+                candidates.Add(RandomSelection(currentGeneration));
+            }
+                        
             var maxFitness = candidates.Max(c => c.Fitness);
             var winner = candidates.Single(c => c.Fitness == maxFitness);
             
@@ -55,12 +63,13 @@ namespace GeneticEngine
             return currentGeneration[random.Next(currentGeneration.Count)];
         }
 
-        public Engine(int populationSize, float elitismPercent, float crossOverRate, float mutationRate)
+        public Engine(int populationSize, float elitismPercent, float crossOverRate, float mutationRate, int tournamentSize = 3)
         {
             this.populationSize = populationSize;
             this.crossOverRate = crossOverRate;
             this.mutationRate = mutationRate;
             this.elitismPercent = elitismPercent;
+            this.tournamentSize = tournamentSize;
         }
 
         public void Solve()
