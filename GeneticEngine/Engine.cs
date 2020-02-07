@@ -108,6 +108,11 @@ namespace GeneticEngine
 
         public void CreateInitialPopulation(Func<T> factoryMethod)
         {
+            if (factoryMethod == null)
+            {
+                throw new ArgumentException(nameof(factoryMethod));
+            }
+
             currentPopulation.Clear();
             while (currentPopulation.Count < this.populationSize)
             {
@@ -120,6 +125,10 @@ namespace GeneticEngine
         /// </summary>
         public void SetCrossOverMethod(Func<T, T, List<T>> crossOverMethod)
         {
+            if (crossOverMethod == null)
+            {
+                throw new ArgumentException(nameof(crossOverMethod));
+            }
             this.crossOverMethod = crossOverMethod;
         }
 
@@ -128,6 +137,11 @@ namespace GeneticEngine
         /// </summary>
         public void SetMutationMethod(Func<T, T> mutationMethod)
         {
+            if (mutationMethod == null)
+            {
+                throw new ArgumentException(nameof(mutationMethod));
+            }
+
             this.mutationMethod = mutationMethod;
         }
 
@@ -136,6 +150,11 @@ namespace GeneticEngine
         /// </summary>
         public void SetFitnessMethod(Func<T, float> fitnessMethod)
         {
+            if (fitnessMethod == null)
+            {
+                throw new ArgumentException(nameof(fitnessMethod));
+            }
+
             this.calculateFitnessMethod = fitnessMethod;
         }
 
@@ -172,6 +191,11 @@ namespace GeneticEngine
         /// </summary>
         public void SetSelectionMethod(Func<IList<CandidateSolution<T>>, CandidateSolution<T>> selectionMethod)
         {
+            if (selectionMethod == null)
+            {
+                throw new ArgumentException(nameof(selectionMethod));
+            }
+
             this.selectionMethod = selectionMethod;
         }
 
@@ -181,6 +205,11 @@ namespace GeneticEngine
         /// </summary>
         public void SetOnGenerationCallback(Action<int, CandidateSolution<T>> callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentException(nameof(callback));
+            }
+
             this.onGenerationCallback = callback;
         }
 
