@@ -1,0 +1,8 @@
+dist: xenial
+language: csharp
+solution: GeneticEngine.sln
+mono: none
+dotnet: 3.1.100
+script:
+  - dotnet test --verbosity normal
+  
