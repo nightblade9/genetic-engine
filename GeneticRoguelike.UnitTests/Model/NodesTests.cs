@@ -13,7 +13,7 @@ namespace GeneticRoguelike.UnitTests
         [TestCase(131)]
         public void EvaluateConstantNodeReturnsConstantValue(int value)
         {
-            var node = new ConstantNode(value);
+            var node = new ConstantNode<int>(value);
             Assert.That(node.Evaluate(), Is.EqualTo(value));
         }
 
@@ -25,8 +25,8 @@ namespace GeneticRoguelike.UnitTests
         [TestCase(171)]
         public void EvaluateReturnsChangingValueForX(int value)
         {
-            var wrapper = new VariableWrapper(value);
-            var node = new VariableNode(wrapper);
+            var wrapper = new VariableWrapper<int>(value);
+            var node = new VariableNode<int>(wrapper);
             Assert.That(node.Evaluate(), Is.EqualTo(value));
 
             wrapper.Value += 7;
@@ -38,15 +38,15 @@ namespace GeneticRoguelike.UnitTests
         {
             // y = (2 + 3) * (1 - (7 + x))
             // x = 3, so we get: -45
-            var x = new VariableWrapper(3);
+            var x = new VariableWrapper<float>(3);
             Func<float, float, float> add = (a, b) => a + b;
             Func<float, float, float> subtract = (a, b) => a - b;
             Func<float, float, float> multiplyNode = (a, b) => a * b;
 
-            var leftSubtree = new OperatorNode(add, new ConstantNode(2), new ConstantNode(3));
-            var rightLeaf = new OperatorNode(add, new ConstantNode(7), new VariableNode(x));
-            var rightSubtree = new OperatorNode(subtract, new ConstantNode(1), rightLeaf);
-            var root = new OperatorNode(multiplyNode, leftSubtree, rightSubtree);
+            var leftSubtree = new OperatorNode<float>(add, new ConstantNode<float>(2), new ConstantNode<float>(3));
+            var rightLeaf = new OperatorNode<float>(add, new ConstantNode<float>(7), new VariableNode<float>(x));
+            var rightSubtree = new OperatorNode<float>(subtract, new ConstantNode<float>(1), rightLeaf);
+            var root = new OperatorNode<float>(multiplyNode, leftSubtree, rightSubtree);
 
             var actual = root.Evaluate();
 

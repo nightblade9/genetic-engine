@@ -10,10 +10,13 @@ namespace GeneticRoguelike
         
         static void Main(string[] args)
         {
-            RunRoguelikeProblem();
+            //RunRoguelikeProblem();
 
             // POC: weight/value problem
             //new WeightValueSolver().EvolveSolution((generation, solution) => System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}"));
+
+            // Graph POC: curve-fitting problem
+            new CurveFittingSolver().EvolveSolution((generation, solution) => System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}"));
         }
 
         private static void RunRoguelikeProblem()

@@ -6,13 +6,13 @@ import csv
 import random
 
 # User-defined inputs
-MIN_X = 0
-MAX_X = 1000
+MIN_X = -500
+MAX_X = 500
 # To start: y=3(x^2 / 8) - 2x/3 + 17
 EQUATION = lambda x: 3 * (x**2 / 8) - (2 * x / 3) + 17
 
 # Internal constants
-NUM_POINTS = 100
+NUM_POINTS = 5000
 OUTPUT_FILE = "data.csv"
 
 x_indicies = []
