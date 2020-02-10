@@ -8,8 +8,8 @@ import random
 # User-defined inputs
 MIN_X = 0
 MAX_X = 1000
-# To start: y=3x^2 - 2x + 17
-EQUATION = lambda x: 3 * (x**2) - (2 * x) + 17
+# To start: y=3(x^2 / 8) - 2x/3 + 17
+EQUATION = lambda x: 3 * (x**2 / 8) - (2 * x / 3) + 17
 
 # Internal constants
 NUM_POINTS = 100
