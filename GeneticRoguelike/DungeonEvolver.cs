@@ -44,9 +44,8 @@ namespace GeneticRoguelike
             return toReturn;
         }
 
-        private List<DungeonOp> Mutate(List<DungeonOp> input)
+        private void Mutate(List<DungeonOp> input)
         {
-            var toReturn = new List<DungeonOp>(input);
             var mutationOp = random.Next(100);
 
             if (mutationOp < 50) // add a random op
@@ -57,23 +56,21 @@ namespace GeneticRoguelike
             }
             else if (mutationOp >= 33 && mutationOp < 66) // swap two elements
             {
-                var firstIndex = random.Next(toReturn.Count);
-                var secondIndex = random.Next(toReturn.Count);
+                var firstIndex = random.Next(input.Count);
+                var secondIndex = random.Next(input.Count);
                 // Swap. Don't care if they're the same
-                var temp = toReturn[firstIndex];
-                toReturn[firstIndex] = toReturn[secondIndex];
-                toReturn[secondIndex] = temp;
+                var temp = input[firstIndex];
+                input[firstIndex] = input[secondIndex];
+                input[secondIndex] = temp;
             }
             else // remove random element
             {
-                if (toReturn.Count > MINIMUM_SOLUTION_SIZE)
+                if (input.Count > MINIMUM_SOLUTION_SIZE)
                 {
-                    var index = random.Next(toReturn.Count);
-                    toReturn.RemoveAt(index);
+                    var index = random.Next(input.Count);
+                    input.RemoveAt(index);
                 }
             }
-
-            return toReturn;
         }
 
         private List<List<DungeonOp>> CrossOver(List<DungeonOp> parent1, List<DungeonOp> parent2)

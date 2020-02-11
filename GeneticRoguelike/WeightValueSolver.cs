@@ -48,18 +48,14 @@ namespace GeneticRoguelike
             return toReturn;
         }
 
-        private List<Valuable> Mutate(List<Valuable> input)
+        private void Mutate(List<Valuable> input)
         {
-            var toReturn = new List<Valuable>(input);
-            
-            var firstIndex = random.Next(toReturn.Count);
-            var secondIndex = random.Next(toReturn.Count);
+            var firstIndex = random.Next(input.Count);
+            var secondIndex = random.Next(input.Count);
             // Swap. Don't care if they're the same
-            var temp = toReturn[firstIndex];
-            toReturn[firstIndex] = toReturn[secondIndex];
-            toReturn[secondIndex] = temp;
-        
-            return toReturn;
+            var temp = input[firstIndex];
+            input[firstIndex] = input[secondIndex];
+            input[secondIndex] = temp;
         }
 
         private List<List<Valuable>> CrossOver(List<Valuable> parent1, List<Valuable> parent2)

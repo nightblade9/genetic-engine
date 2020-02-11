@@ -26,7 +26,7 @@ namespace GeneticEngine
         
         // Given two parents, create one or more children
         private Func<T, T, List<T>> crossOverMethod = null;
-        private Func<T, T> mutationMethod = null;
+        private Action<T> mutationMethod = null;
         private Func<T, float> calculateFitnessMethod = null;
         
         // Set of solutions in, and a single solution returned
@@ -135,7 +135,7 @@ namespace GeneticEngine
         /// <summary>
         /// Sets a mutation method; it takes a single T input, mutates it, and returns the mutated T as output.
         /// </summary>
-        public void SetMutationMethod(Func<T, T> mutationMethod)
+        public void SetMutationMethod(Action<T> mutationMethod)
         {
             if (mutationMethod == null)
             {
