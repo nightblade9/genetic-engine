@@ -92,7 +92,7 @@ namespace GeneticEngine.UnitTests
             engine.SetFitnessMethod((a) => 99);
             engine.SetCrossOverMethod((a, b) => new List<int>() { a + 1, b - 1});
             engine.SetSelectionMethod(engine.TournamentSelection);
-            engine.SetMutationMethod((a) => a);
+            engine.SetMutationMethod((a) => {});
 
             engine.SetOnGenerationCallback((generation, best) => {
                 bestFitness = best.Fitness;
@@ -216,7 +216,7 @@ namespace GeneticEngine.UnitTests
             engine.SetCrossOverMethod((a, b) => new List<int>() { a, b});
             engine.SetSelectionMethod(engine.TournamentSelection);
             // No-op for mutation
-            engine.SetMutationMethod((a) => a);
+            engine.SetMutationMethod((a) => {});
 
             engine.SetOnGenerationCallback((generation, best) => {
                 bestSolutions.Add(best.Solution);
