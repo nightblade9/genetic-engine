@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SampleSolutions.Model;
 using GeneticEngine;
 using GoRogue.Pathing;
+using System.Threading.Tasks;
 
 namespace SampleSolutions
 {
@@ -11,7 +12,6 @@ namespace SampleSolutions
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
         private const int DUNGEON_WIDTH = 80;
         private const int DUNGEON_HEIGHT = 28;
-        private const int NUMBER_OF_POINTS_TO_CALCULATE = 10;
                 
         // Lock access to the RNG because it's expensive to create and not thread-safe; if accessed
         // from mutliple threads, Next() just returns 0 all the time (which is why we see best=0).
@@ -103,51 +103,25 @@ namespace SampleSolutions
                 op.Execute(map);
             }
 
-            // Perhaps the most costly part of all: generate a dungeon, pick ten random points, and calculate the 
-            // average distance (walking a path) from each point to each every point (10 * 9).
+            // Calculate the walking distance from every point to the center. Manhatten distance (no sqrt).
+            // More distance is better, obviously, because we're more maze-like.
+            var center = new GoRogue.Coord(DUNGEON_WIDTH / 2, DUNGEON_HEIGHT / 2);
+            map.Set(center.X, center.Y, true);
 
-            // Generate ten points. Repeats are ignored.
-            var points = new List<GoRogue.Coord>(NUMBER_OF_POINTS_TO_CALCULATE);
-            int iterations = 0;
-            while (iterations++ < 10000 && points.Count < points.Capacity)
-            {
-                int x = 0;
-                int y = 0;
-
-                // Since we're doing this from a Parallel.ForEach, if we don't lock on random,
-                // it keeps returning zero; we end up with 10k iterations checking (0, 0) every time.
-                //  There doesn't seem to be much performance penalty to doing this.
-                lock (randomLock)
-                {
-                    x = random.Next(GridMap.TILES_WIDE);
-                    y = random.Next(GridMap.TILES_HIGH);
-                }
-
-                var next = new GoRogue.Coord(x, y);
-                // Make sure we get walkable points
-                if (map.Get(x, y) == true && !points.Contains(next))
-                {
-                    points.Add(next);
-                }
-            }
-
-            // Calculate distance from each point to each point
-            var numCalculated = 0;
             var totalCalculated = 0f;
+
             var aStar = new AStar(map.Data, GoRogue.Distance.MANHATTAN);
 
-            for (int i = 0; i < points.Count; i++)
+            for (var y = 0; y < DUNGEON_HEIGHT; y++)
             {
-                for (int j = i + 1; j < points.Count; j++)
+                for (var x = 0; x < DUNGEON_WIDTH; x++)
                 {
-                    var path = aStar.ShortestPath(points[i], points[j]);
-                    numCalculated++;
+                    var path = aStar.ShortestPath(new GoRogue.Coord(x, y), center);
                     totalCalculated +=  path != null ? path.Length : 0; // 0 if no path found
                 }
             }
 
-            var average = numCalculated == 0 ? 0 : totalCalculated / numCalculated;
-            return average;
+            return totalCalculated;
         }
     }
 }

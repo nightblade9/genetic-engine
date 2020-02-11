@@ -244,15 +244,11 @@ namespace GeneticEngine
             // So, SMH, just do this in serial for now... epic fail :<
 
             // NB: roguelike is a poor test, because it picks random points for fitness.
-            
-            //Parallel.ForEach(this.currentPopulation, item =>
-            //{
-            foreach (var item in this.currentPopulation)
+            Parallel.ForEach(this.currentPopulation, item =>
             {
                 var score = this.calculateFitnessMethod(item);
                 evaluated.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
-            }
-            //});
+            });
 
             return evaluated.OrderByDescending(t => t.Fitness).ToList();
         }

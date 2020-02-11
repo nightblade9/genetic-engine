@@ -35,14 +35,6 @@ namespace SampleSolutions.Screens
 
         private void Redraw(int generation, CandidateSolution<List<DungeonOp>> bestSolution)
         {
-            var fitness = bestSolution.Fitness;
-            if (fitness < previousFitness)
-            {
-                throw new InvalidOperationException($"Fitness dropped from {previousFitness} to {bestSolution.Fitness}!");
-            }
-            previousFitness = fitness;
-            previousGeneration = bestSolution.Solution;
-            
             var data = new List<DungeonOp>(bestSolution.Solution);
 
             var map = new GridMap();
@@ -55,7 +47,7 @@ namespace SampleSolutions.Screens
             {
                 this.Clear();
                 
-                var status = $"{(DateTime.Now - this.startedOn).TotalSeconds}s | Generation {generation}, FITNESS: best={fitness}, with {data.Count} ops";
+                var status = $"{(DateTime.Now - this.startedOn).TotalSeconds}s | Generation {generation}, FITNESS: best={bestSolution.Fitness}, with {data.Count} ops";
                 this.Print(0, STATUS_Y, status, Color.White);
                 System.Console.WriteLine(status);
 
