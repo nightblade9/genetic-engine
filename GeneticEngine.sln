@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticRoguelike", "GeneticRoguelike\GeneticRoguelike.csproj", "{F30074C0-2AE3-42EF-8271-A0B335C53D59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleSolutions", "SampleSolutions\SampleSolutions.csproj", "{F30074C0-2AE3-42EF-8271-A0B335C53D59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticEngine", "GeneticEngine\GeneticEngine.csproj", "{D5D36A59-B241-4CF6-9CCE-74471A4FD9A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticEngine.UnitTests", "GeneticEngine.UnitTests\GeneticEngine.UnitTests.csproj", "{BD3466D7-CB5D-43DC-93F4-370502E99DBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticRoguelike.UnitTests", "GeneticRoguelike.UnitTests\GeneticRoguelike.UnitTests.csproj", "{377FEFC4-A224-4FF1-A40F-EF0251DC2EB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleSolutions.UnitTests", "SampleSolutions.UnitTests\SampleSolutions.UnitTests.csproj", "{377FEFC4-A224-4FF1-A40F-EF0251DC2EB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

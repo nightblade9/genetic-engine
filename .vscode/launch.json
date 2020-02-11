@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/GeneticRoguelike/bin/Debug/netcoreapp2.2/GeneticRoguelike.dll",
+            "program": "${workspaceFolder}/SampleSolutions/bin/Debug/netcoreapp2.2/SampleSolutions.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/GeneticRoguelike",
+            "cwd": "${workspaceFolder}/SampleSolutions",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false
