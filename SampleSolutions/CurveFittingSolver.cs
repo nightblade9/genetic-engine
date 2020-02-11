@@ -37,7 +37,7 @@ namespace SampleSolutions
 
             this.LoadXAndExpectedValuesFromCsv();
             var tree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
-            var engine = new Engine<OperatorNode<float>, Object>(1000, 0.1f, 0.95f, 0.05f);
+            var engine = new Engine<OperatorNode<float>, Object>(1000, 0.1f, 0.5f, 0.1f);
             engine.CreateInitialPopulation(this.CreateRandomTrees);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
