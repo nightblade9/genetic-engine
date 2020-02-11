@@ -9,16 +9,18 @@ namespace GeneticRoguelike
 {
     public class CurveFittingSolver
     {
-        private const float PROBABILITY_OF_VARIABLE_NODE = 0.2f; 
+        private const float PROBABILITY_OF_VARIABLE_NODE = 0.2f;
+        // When generating trees, big trees are cool. Ditto for mutation, where we may be replacing a huge subtee with a new one.
         private const float PROBABILITY_OF_SUBTREE = 0.5f;
         private object randomLock = new Object();
         private Random random = new Random();
-        private IList<Func<float, float, float>> operators = new List<Func<float, float, float>>
+
+        private IDictionary<string, Func<float, float, float>> operations = new Dictionary<string, Func<float, float, float>>
         {
-            new Func<float, float, float>((a, b) => a + b),
-            new Func<float, float, float>((a, b) => a - b),
-            new Func<float, float, float>((a, b) => a * b),
-            new Func<float, float, float>((a, b) => b == 0 ? 0 : a / b),
+            { "+", new Func<float, float, float>((a, b) => a + b) },
+            { "-", new Func<float, float, float>((a, b) => a - b) },
+            { "×", new Func<float, float, float>((a, b) => a * b) },
+            { "÷", new Func<float, float, float>((a, b) => b == 0 ? 0 : a / b) },
         };
         private IList<int> constants = new List<int>();
         private VariableWrapper<float> x = new VariableWrapper<float>(0);
@@ -45,9 +47,37 @@ namespace GeneticRoguelike
             engine.Solve();
         }
 
-        private OperatorNode<float> Mutate(OperatorNode<float> node)
+        // Pick a random node, pick a random op, and replace it with a new tree
+        private void Mutate(OperatorNode<float> node)
         {
-            var victim = PickRandomNode(node);
+            if (node.Operands == null)
+            {
+                // We could mutate the node itself, but, meh.
+                return;
+            }
+
+            var newParent = PickRandomNode(node);
+            var newSubtree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
+
+            if (newParent.Operands != null)
+            {
+                lock (randomLock)
+                {
+                    if (random.NextDouble() < 0.5)
+                    {
+                        newParent.Operands[0] = newSubtree;
+                    }
+                    else
+                    {
+                        newParent.Operands[1] = newSubtree;
+                    }
+                }
+            }
+            else
+            {
+                // Generate a tiny subtree
+                newParent.Operands = new Node<float>[] { this.GenerateSubtree(0), this.GenerateSubtree(0) };
+            }
         }
 
         private Node<float> PickRandomNode(Node<float> root)
@@ -59,8 +89,10 @@ namespace GeneticRoguelike
             while (toInvestigate.Any())
             {
                 var current = toInvestigate[0];
+                toInvestigate.RemoveAt(0);
 
-                if (!nodesSeen.Contains(current))
+                // Don't ever add the root, we don't want to swap the whole tree.
+                if (!nodesSeen.Contains(current) && current != root)
                 {
                     nodesSeen.Add(current);
                 }
@@ -69,25 +101,80 @@ namespace GeneticRoguelike
                 {
                     foreach (var child in current.Operands)
                     {
-                        // Assuming no cycles / have never seen this node
+                        // Checks if seen later
                         toInvestigate.Add(child);
                     }
                 }
             }
-
+            
             lock (randomLock)
             {
-                return nodesSeen[random.Next(nodesSeen.Count)];
+                return nodesSeen.ElementAt(random.Next(nodesSeen.Count()));
             }
         }
 
         private List<OperatorNode<float>> CrossOver(OperatorNode<float> parent1, OperatorNode<float> parent2)
         {
-            var child1 = parent1.Clone();
-            var child2 = parent2.Clone();
+            var child1 = parent1.Clone() as OperatorNode<float>;
+            var child2 = parent2.Clone() as OperatorNode<float>;
 
-            var swap1 =  PickRandomNode(child1).Clone();
-            var swap2 =  PickRandomNode(child2).Clone();
+            var node1 =  PickRandomNode(child1);
+            var node2 =  PickRandomNode(child2);
+
+            // Swap node1 and node2, ugh.
+            // I am not sure if this code is correct.
+            var oldNode1 = node1.Clone();
+            if (node1.Parent.Operands[0] == node1) {
+                node1.Parent.Operands[0] = node2;
+            } else {
+                node1.Parent.Operands[1] = node2;
+            }
+
+            if (node2.Parent.Operands[0] == node2) {
+                node2.Parent.Operands[0] = oldNode1;
+            } else {
+                node2.Parent.Operands[1] = oldNode1;
+            }
+
+            // Parents last.
+            var temp = node1.Parent;
+            node1.Parent = node2.Parent;
+            node2.Parent = temp;
+            
+            // Old code to swap random child of with random child of node2.
+            /*
+            bool replaceLeft;
+            bool replaceWithLeft;
+
+            lock (randomLock)
+            {
+                replaceLeft = random.NextDouble() < 0.5;
+                replaceWithLeft = random.NextDouble() < 0.5;
+            }
+
+            // This code is greatly inelegant.
+            var replace = replaceLeft ? node1.Operands[0] : node1.Operands[1];
+            var replaceWith = replaceWithLeft ? node2.Operands[0] : node2.Operands[1];
+
+            replaceWith.Parent = node1;
+            replace.Parent = node2;
+
+            if (replaceLeft)
+            {
+                node1.Operands[0] = replaceWith;
+             } else {
+                 node1.Operands[1] = replaceWith;
+             }
+
+            if (replaceWithLeft)
+            {
+                node2.Operands[0] = replace;
+            } else {
+                node2.Operands[1] = replace;
+            }
+            */
+
+            return new List<OperatorNode<float>> { child1, child2 };
         }
 
         private void LoadXAndExpectedValuesFromCsv()
@@ -129,12 +216,12 @@ namespace GeneticRoguelike
         private OperatorNode<float> GenerateSubtree(float probabilityOfRecursing)
         {
             bool shouldRecurse;
-            Func<float, float, float> operation;
+            string operationName;
 
             lock (randomLock)
             {
                 shouldRecurse = random.NextDouble() < probabilityOfRecursing;
-                operation = operators[random.Next(operators.Count)];
+                operationName = operations.Keys.ElementAt(random.Next(operations.Keys.Count));
             }
 
             if (shouldRecurse)
@@ -142,7 +229,7 @@ namespace GeneticRoguelike
                 // Keep decaying probability so we don't get HUGE trees
                 var left = GenerateSubtree(probabilityOfRecursing / 2);
                 var right = GenerateSubtree(probabilityOfRecursing / 2);
-                return new OperatorNode<float>(operation, left, right);
+                return new OperatorNode<float>(operationName, operations[operationName], left, right);
             }
             else
             {
@@ -186,7 +273,7 @@ namespace GeneticRoguelike
                     right = new ConstantNode<float>(value);
                 }
 
-                return new OperatorNode<float>(operation, left, right);
+                return new OperatorNode<float>(operationName, operations[operationName], left, right);
             }
         }
     }
