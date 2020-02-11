@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using GeneticEngine;
-using GeneticRoguelike.Model;
+using SampleSolutions.Model;
 using Microsoft.Xna.Framework;
 
-namespace GeneticRoguelike.Screens
+namespace SampleSolutions.Screens
 {
     public class VisualizationScreen : SadConsole.Console
     {

@@ -1,7 +1,7 @@
 using GoRogue.MapViews;
 using System;
 
-namespace GeneticRoguelike.Model
+namespace SampleSolutions.Model
 {
     public class GridMap
     {        

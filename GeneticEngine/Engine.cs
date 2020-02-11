@@ -82,8 +82,7 @@ namespace GeneticEngine
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
 
-                // Horrible bug caused by parallel fitness evaluation giving non-deterministic results.
-
+                // Horrible bug exacerbated by parallel fitness evaluation giving non-deterministic results.
                 // Sanity check: is elitism enabled? Is it big enough to be at least one thing?
                 if (generation >= 2)
                 {

@@ -1,9 +1,9 @@
 ﻿using GeneticEngine;
-using GeneticRoguelike.Model;
-using GeneticRoguelike.Screens;
+using SampleSolutions.Model;
+using SampleSolutions.Screens;
 using SadConsole;
 
-namespace GeneticRoguelike
+namespace SampleSolutions
 {
     class Program
     {
