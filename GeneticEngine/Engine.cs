@@ -12,6 +12,8 @@ namespace GeneticEngine
     /// </summary>
     public class Engine<T, S>
     {
+        private const int GENERATIONS_OF_SAME_SCORE_BEFORE_QUIT = 10;
+
         private int tournamentSize;
         private int populationSize;
         private float crossOverRate;
@@ -92,15 +94,15 @@ namespace GeneticEngine
                     }
                 }
                 
-                // Add a record of our best (keep only 10)
+                // Add a record of our best (keep only 10-20)
                 previousGenerationScores.Add(best.Fitness);
                 lastGenerationScore = best.Fitness;
-                while (previousGenerationScores.Count > 10)
+                while (previousGenerationScores.Count > GENERATIONS_OF_SAME_SCORE_BEFORE_QUIT)
                 {
                     previousGenerationScores.RemoveAt(0);
                 }
                 // Update what the average difference is
-                if (previousGenerationScores.Count == 10)
+                if (previousGenerationScores.Count == GENERATIONS_OF_SAME_SCORE_BEFORE_QUIT)
                 {
                     var average = previousGenerationScores.Average();
                     averageDifference = previousGenerationScores.Select(s => Math.Abs(s - average)).Sum();
