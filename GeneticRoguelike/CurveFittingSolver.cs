@@ -20,7 +20,7 @@ namespace GeneticRoguelike
             { "+", new Func<float, float, float>((a, b) => a + b) },
             { "-", new Func<float, float, float>((a, b) => a - b) },
             { "×", new Func<float, float, float>((a, b) => a * b) },
-            { "÷", new Func<float, float, float>((a, b) => b == 0 ? 0 : a / b) },
+            { "÷", new Func<float, float, float>((a, b) => b == 0 ? 1 : a / b) },
         };
         private IList<int> constants = new List<int>();
         private VariableWrapper<float> x = new VariableWrapper<float>(0);
@@ -197,12 +197,11 @@ namespace GeneticRoguelike
                 this.x.Value = x;
                 float actualValue = root.Evaluate();
                 float expectedValue = this.data[x];
-                // Are we losing precision by doing this?
-                // Calculate how far off we are from the expected value
+                // Calculate how far off we are from the expected value. 
                 total += Math.Abs(actualValue - expectedValue);
             }
 
-            // Higher fitness is better, so negate?
+            // Higher fitness is better, so negate
             return -total;
         }
 

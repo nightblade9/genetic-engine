@@ -6,10 +6,13 @@ import csv
 import random
 
 # User-defined inputs
-MIN_X = -500
-MAX_X = 500
-# Later: y=3(x^2 / 8) - 2x/3 + 17
+MIN_X = 0
+MAX_X = 1000
+
+# y = x^2 + 2x + 1
 EQUATION = lambda x: x**2 + (2*x) + 1
+# y=3(x^2 / 8) - 2x/3 + 17
+# EQUATION = lambda x: (3 * ((x**2) / 8)) - (2 * x / 3) + 17
 
 # Internal constants
 NUM_POINTS = 5000

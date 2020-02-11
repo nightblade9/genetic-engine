@@ -44,10 +44,10 @@ namespace GeneticRoguelike.UnitTests
             Func<float, float, float> multiplyNode = (a, b) => a * b;
 
             // We don't set parent nodes because we don't care about those in this test
-            var leftSubtree = new OperatorNode<float>(add, new ConstantNode<float>(2), new ConstantNode<float>(3));
-            var rightLeaf = new OperatorNode<float>(add, new ConstantNode<float>(7), new VariableNode<float>(x));
-            var rightSubtree = new OperatorNode<float>(subtract, new ConstantNode<float>(1), rightLeaf);
-            var root = new OperatorNode<float>(multiplyNode, leftSubtree, rightSubtree);
+            var leftSubtree = new OperatorNode<float>("add", add, new ConstantNode<float>(2), new ConstantNode<float>(3));
+            var rightLeaf = new OperatorNode<float>("add", add, new ConstantNode<float>(7), new VariableNode<float>(x));
+            var rightSubtree = new OperatorNode<float>("subtract", subtract, new ConstantNode<float>(1), rightLeaf);
+            var root = new OperatorNode<float>("multiply", multiplyNode, leftSubtree, rightSubtree);
 
             var actual = root.Evaluate();
 

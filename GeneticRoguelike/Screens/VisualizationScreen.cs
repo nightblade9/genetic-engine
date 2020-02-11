@@ -15,6 +15,8 @@ namespace GeneticRoguelike.Screens
         private Thread thread;
         private DateTime startedOn;
         private Object drawLock = new Object();
+        private float previousFitness = 0;
+        private List<DungeonOp> previousGeneration = new List<DungeonOp>();
 
         public VisualizationScreen(int width, int height) : base(width, height)
         {
@@ -34,6 +36,13 @@ namespace GeneticRoguelike.Screens
         private void Redraw(int generation, CandidateSolution<List<DungeonOp>> bestSolution)
         {
             var fitness = bestSolution.Fitness;
+            if (fitness < previousFitness)
+            {
+                throw new InvalidOperationException($"Fitness dropped from {previousFitness} to {bestSolution.Fitness}!");
+            }
+            previousFitness = fitness;
+            previousGeneration = bestSolution.Solution;
+            
             var data = new List<DungeonOp>(bestSolution.Solution);
 
             var map = new GridMap();

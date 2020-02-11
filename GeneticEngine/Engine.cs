@@ -33,7 +33,7 @@ namespace GeneticEngine
         private Func<IList<CandidateSolution<T>>, CandidateSolution<T>> selectionMethod = null;
         private Action<int, CandidateSolution<T>> onGenerationCallback = null;
         private CandidateSolution<T> best = null;
-        private List<float> lastTenGenerationScores = new List<float>();
+        private List<float> previousGenerationScores = new List<float>();
 
         public Engine(int populationSize, float elitismPercent, float crossOverRate, float mutationRate, int tournamentSize = 3)
         {
@@ -68,6 +68,7 @@ namespace GeneticEngine
             }
 
             var generation = 0;
+            // Accept some small tolerable range before we say scores are stable
             float averageDifference = 999;
             float lastGenerationScore = 0;
 
@@ -79,18 +80,30 @@ namespace GeneticEngine
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
 
-                // Add a record of our best (keep only 10)
-                lastTenGenerationScores.Add(best.Fitness);
-                lastGenerationScore = best.Fitness;
-                while (lastTenGenerationScores.Count > 10)
+                // Horrible bug caused by parallel fitness evaluation giving non-deterministic results.
+
+                // Sanity check: is elitism enabled? Is it big enough to be at least one thing?
+                if (generation >= 2)
                 {
-                    lastTenGenerationScores.RemoveAt(0);
+                    float previousBest = previousGenerationScores[previousGenerationScores.Count - 1];
+                    if (best.Fitness < previousBest && elitismPercent > 0 && (int)(elitismPercent * this.populationSize) >= 1)
+                    {
+                        throw new InvalidOperationException($"Elitism is enabled but fitness on generation {generation} dropped from {previousBest} to {best.Fitness}");
+                    }
+                }
+                
+                // Add a record of our best (keep only 10)
+                previousGenerationScores.Add(best.Fitness);
+                lastGenerationScore = best.Fitness;
+                while (previousGenerationScores.Count > 10)
+                {
+                    previousGenerationScores.RemoveAt(0);
                 }
                 // Update what the average difference is
-                if (lastTenGenerationScores.Count == 10)
+                if (previousGenerationScores.Count == 10)
                 {
-                    var average = lastTenGenerationScores.Average();
-                    averageDifference = lastTenGenerationScores.Select(s => Math.Abs(s - average)).Sum();
+                    var average = previousGenerationScores.Average();
+                    averageDifference = previousGenerationScores.Select(s => Math.Abs(s - average)).Sum();
                 }
 
                 // Create the next generation
@@ -221,11 +234,24 @@ namespace GeneticEngine
             // than the full population size.
             var evaluated = new ConcurrentBag<CandidateSolution<T>>();
 
-            Parallel.ForEach(this.currentPopulation, item =>
+            // I would LOVE to do this in parallel. The performance is better (around 10x).
+            // BUT, there's a big problem. For some reason, doing this in parallel, with the
+            // curve-fitting and roguelike samples, ends up with future generations having a
+            // poorer fitness than previous generations. AND, for the SAME equation (eg. x^2),
+            // I can see multiple instances in the generation, with different fitness scores!
+            // Even though the fitness is non-random and completely deterministic!
+            // So, SMH, just do this in serial for now... epic fail :<
+
+            // NB: roguelike is a poor test, because it picks random points for fitness.
+            
+            //Parallel.ForEach(this.currentPopulation, item =>
+            //{
+            foreach (var item in this.currentPopulation)
             {
                 var score = this.calculateFitnessMethod(item);
                 evaluated.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
-            });
+            }
+            //});
 
             return evaluated.OrderByDescending(t => t.Fitness).ToList();
         }
