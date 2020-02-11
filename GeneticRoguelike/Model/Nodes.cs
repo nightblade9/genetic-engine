@@ -4,31 +4,41 @@ namespace GeneticRoguelike.Model
 {
     public abstract class Node<T>
     {
-        public Node<T> Parent { get; private set; } // So we can replace a node
+        public Node<T> Parent { get; set; } // So we can replace a node
         public Node<T>[] Operands;
 
         public abstract T Evaluate();
+
         public abstract Node<T> Clone();
     }
 
     public class OperatorNode<T> : Node<T>
     {
         private Func<T, T, T> operation;
+        private string operationName; // for debugging
 
-        public OperatorNode(Func<T, T, T> operation, Node<T> child1, Node<T> child2)
+        public OperatorNode(string operationName, Func<T, T, T> operation, Node<T> child1, Node<T> child2)
         {
+            this.operationName = operationName;
             this.operation = operation;
             this.Operands = new Node<T>[] { child1, child2 };
+            child1.Parent = this;
+            child2.Parent = this;
         }
 
-        public override Node<T> Clone()
+        override public Node<T> Clone()
         {
-            return new OperatorNode<T>(this.operation, this.Operands[0].Clone(), this.Operands[1].Clone());
+            return new OperatorNode<T>(this.operationName, this.operation, this.Operands[0].Clone() as Node<T>, this.Operands[1].Clone() as Node<T>);
         }
 
         override public T Evaluate()
         {
             return this.operation.Invoke(this.Operands[0].Evaluate(), this.Operands[1].Evaluate());
+        }
+
+        override public string ToString()
+        {
+            return $"({this.Operands[0].ToString()} {this.operationName} {this.Operands[1].ToString()})";
         }
     }
 
@@ -43,7 +53,7 @@ namespace GeneticRoguelike.Model
             this.value = value;
         }
 
-        public override Node<T> Clone()
+        override public Node<T> Clone()
         {
             return new VariableNode<T>(this.value);
         }
@@ -51,6 +61,11 @@ namespace GeneticRoguelike.Model
         override public T Evaluate()
         {
             return this.value.Value;
+        }
+
+        override public string ToString()
+        {
+            return "X";
         }
     }
 
@@ -63,7 +78,7 @@ namespace GeneticRoguelike.Model
             this.value = constant;
         }
 
-        public override Node<T> Clone()
+        override public Node<T> Clone()
         {
             return new ConstantNode<T>(this.value);
         }
@@ -71,6 +86,11 @@ namespace GeneticRoguelike.Model
         override public T Evaluate()
         {
             return this.value;
+        }
+
+        override public string ToString()
+        {
+            return this.value.ToString();
         }
     }
 
