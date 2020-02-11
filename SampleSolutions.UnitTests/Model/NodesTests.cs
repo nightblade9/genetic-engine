@@ -1,8 +1,8 @@
 using System;
-using GeneticRoguelike.Model;
+using SampleSolutions.Model;
 using NUnit.Framework;
 
-namespace GeneticRoguelike.UnitTests
+namespace SampleSolutions.UnitTests
 {
     [TestFixture]
     public class NodesTests

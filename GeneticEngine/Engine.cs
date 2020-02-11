@@ -238,14 +238,12 @@ namespace GeneticEngine
 
             // I would LOVE to do this in parallel. The performance is better (around 10x).
             // BUT, there's a big problem. For some reason, doing this in parallel, with the
-            // curve-fitting and roguelike samples, ends up with future generations having a
+            // curve-fitting sample, ends up with future generations having a
             // poorer fitness than previous generations. AND, for the SAME equation (eg. x^2),
             // I can see multiple instances in the generation, with different fitness scores!
             // Even though the fitness is non-random and completely deterministic!
             // So, SMH, just do this in serial for now... epic fail :<
 
-            // NB: roguelike is a poor test, because it picks random points for fitness.
-            
             //Parallel.ForEach(this.currentPopulation, item =>
             //{
             foreach (var item in this.currentPopulation)

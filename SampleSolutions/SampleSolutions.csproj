@@ -6,18 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Fonts\IBM.font" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Fonts\IBM8x16.png" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GoRogue" Version="2.1.2" />
-    <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.4" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
-    <PackageReference Include="SadConsole" Version="8.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GeneticEngine\GeneticEngine.csproj" />
   </ItemGroup>
 

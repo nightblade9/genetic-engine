@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GeneticEngine;
 using System.Linq;
 
-namespace GeneticRoguelike
+namespace SampleSolutions
 {
     public class WeightValueSolver
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace GeneticRoguelike.Model
+namespace SampleSolutions.Model
 {
     public abstract class Node<T>
     {

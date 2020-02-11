@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GeneticEngine;
-using GeneticRoguelike.Model;
+using SampleSolutions.Model;
 
-namespace GeneticRoguelike
+namespace SampleSolutions
 {
     public class CurveFittingSolver
     {
