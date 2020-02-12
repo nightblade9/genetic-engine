@@ -18,7 +18,7 @@ namespace SampleSolutions.Model
             set { this.Operands[1] = value; }
         }
 
-        public abstract T Evaluate();
+        public abstract T Evaluate(T x);
 
         public abstract Node<T> Clone();
 
@@ -43,9 +43,9 @@ namespace SampleSolutions.Model
             return new OperatorNode<T>(this.operationName, this.operation, this.Left.Clone() as Node<T>, this.Right.Clone() as Node<T>);
         }
 
-        override public T Evaluate()
+        override public T Evaluate(T x)
         {
-            return this.operation.Invoke(this.Left.Evaluate(), this.Right.Evaluate());
+            return this.operation.Invoke(this.Left.Evaluate(x), this.Right.Evaluate(x));
         }
 
         override public string ToString()
@@ -70,9 +70,9 @@ namespace SampleSolutions.Model
             return new VariableNode<T>(this.value);
         }
 
-        override public T Evaluate()
+        override public T Evaluate(T x)
         {
-            return this.value.Value;
+            return x;
         }
 
         override public string ToString()
@@ -95,7 +95,7 @@ namespace SampleSolutions.Model
             return new ConstantNode<T>(this.value);
         }
 
-        override public T Evaluate()
+        override public T Evaluate(T x)
         {
             return this.value;
         }

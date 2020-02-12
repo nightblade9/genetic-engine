@@ -225,16 +225,12 @@ namespace SampleSolutions
         private float CalculateFitness(OperatorNode<float> root)
         {
             float total = 0;
-            lock (this.x)
+            foreach (var x in this.data.Keys)
             {
-                foreach (var x in this.data.Keys)
-                {
-                    this.x.Value = x;
-                    float actualValue = root.Evaluate();
-                    float expectedValue = this.data[x];
-                    // Calculate how far off we are from the expected value. 
-                    total += Math.Abs(actualValue - expectedValue);
-                }
+                float actualValue = root.Evaluate(x);
+                float expectedValue = this.data[x];
+                // Calculate how far off we are from the expected value. 
+                total += Math.Abs(actualValue - expectedValue);
             }
             // Higher fitness is better, so negate
             return -total;
