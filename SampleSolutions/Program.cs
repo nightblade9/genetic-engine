@@ -7,9 +7,6 @@ namespace SampleSolutions
 {
     class Program
     {
-        private const int WIDTH = 80;
-        private const int HEIGHT = 29;
-        
         static void Main(string[] args)
         {
             // Not a good idea, fitness is non-deterministic.
@@ -35,11 +32,11 @@ namespace SampleSolutions
 
         private static void RunRoguelikeProblem()
         {
-            SadConsole.Game.Create("Fonts/IBM.font", WIDTH, HEIGHT);
+            SadConsole.Game.Create("Fonts/IBM.font", GridMap.TILES_WIDE, GridMap.TILES_HIGH);
 
             SadConsole.Game.OnInitialize = () =>
             {
-                Global.CurrentScreen = new VisualizationScreen(WIDTH, HEIGHT);
+                Global.CurrentScreen = new VisualizationScreen(GridMap.TILES_WIDE, GridMap.TILES_HIGH);
             };
 
             SadConsole.Game.OnDestroy = () =>

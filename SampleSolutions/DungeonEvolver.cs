@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using SampleSolutions.Model;
 using GeneticEngine;
 using GoRogue.Pathing;
-using System.Threading.Tasks;
 
 namespace SampleSolutions
 {
     public class DungeonEvolver
     {
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
-        private const int DUNGEON_WIDTH = 80;
-        private const int DUNGEON_HEIGHT = 28;
                 
         // Lock access to the RNG because it's expensive to create and not thread-safe; if accessed
         // from mutliple threads, Next() just returns 0 all the time (which is why we see best=0).
@@ -105,16 +102,16 @@ namespace SampleSolutions
 
             // Calculate the walking distance from every point to the center. Manhatten distance (no sqrt).
             // More distance is better, obviously, because we're more maze-like.
-            var center = new GoRogue.Coord(DUNGEON_WIDTH / 2, DUNGEON_HEIGHT / 2);
+            var center = new GoRogue.Coord(GridMap.TILES_WIDE / 2, GridMap.TILES_HIGH / 2);
             map.Set(center.X, center.Y, true);
 
             var totalCalculated = 0f;
 
             var aStar = new AStar(map.Data, GoRogue.Distance.MANHATTAN);
 
-            for (var y = 0; y < DUNGEON_HEIGHT; y++)
+            for (var y = 0; y < GridMap.TILES_HIGH; y++)
             {
-                for (var x = 0; x < DUNGEON_WIDTH; x++)
+                for (var x = 0; x < GridMap.TILES_WIDE; x++)
                 {
                     var path = aStar.ShortestPath(new GoRogue.Coord(x, y), center);
                     totalCalculated +=  path != null ? path.Length : 0; // 0 if no path found

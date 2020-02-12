@@ -5,8 +5,8 @@ namespace SampleSolutions.Model
 {
     public class GridMap
     {        
-        public const int TILES_WIDE = 80;
-        public const int TILES_HIGH = 28;
+        public const int TILES_WIDE = 40;
+        public const int TILES_HIGH = 15;
         private const int ROOM_MIN_SIZE = 4;
         private const int ROOM_MAX_SIZE = 6;
         private const int HALL_MIN_SIZE = 5;
