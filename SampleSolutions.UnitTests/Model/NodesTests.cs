@@ -14,7 +14,7 @@ namespace SampleSolutions.UnitTests
         public void EvaluateConstantNodeReturnsConstantValue(int value)
         {
             var node = new ConstantNode<int>(value);
-            Assert.That(node.Evaluate(), Is.EqualTo(value));
+            Assert.That(node.Evaluate(1), Is.EqualTo(value));
         }
 
         [TestCase(-11)]
@@ -27,10 +27,10 @@ namespace SampleSolutions.UnitTests
         {
             var wrapper = new VariableWrapper<int>(value);
             var node = new VariableNode<int>(wrapper);
-            Assert.That(node.Evaluate(), Is.EqualTo(value));
+            Assert.That(node.Evaluate(value), Is.EqualTo(value));
 
             wrapper.Value += 7;
-            Assert.That(node.Evaluate(), Is.EqualTo(value + 7));
+            Assert.That(node.Evaluate(value + 7), Is.EqualTo(value + 7));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace SampleSolutions.UnitTests
             var rightSubtree = new OperatorNode<float>("subtract", subtract, new ConstantNode<float>(1), rightLeaf);
             var root = new OperatorNode<float>("multiply", multiplyNode, leftSubtree, rightSubtree);
 
-            var actual = root.Evaluate();
+            var actual = root.Evaluate(x.Value);
 
             var expected = (2 + 3) * (1 - (7 + x.Value));
             Assert.That(actual, Is.EqualTo(expected));
@@ -60,7 +60,7 @@ namespace SampleSolutions.UnitTests
         {
             var expected = new VariableNode<int>(new VariableWrapper<int>(37));
             var actual = expected.Clone();
-            Assert.That(actual.Evaluate(), Is.EqualTo(expected.Evaluate()));
+            Assert.That(actual.Evaluate(999), Is.EqualTo(expected.Evaluate(999)));
             Assert.That(actual.Parent, Is.EqualTo(expected.Parent));
         }
 
