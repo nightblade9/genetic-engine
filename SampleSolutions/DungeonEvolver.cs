@@ -13,8 +13,8 @@ namespace SampleSolutions
         // Lock access to the RNG because it's expensive to create and not thread-safe; if accessed
         // from mutliple threads, Next() just returns 0 all the time (which is why we see best=0).
         // See: https://docs.microsoft.com/en-us/dotnet/api/system.random?view=netframework-4.8
-        private Object randomLock = new Object();
         private Random random = new Random();
+        private readonly int GLOBAL_RANDOM_SEED = 9999999;
 
         public void EvolveSolution(Action<int, CandidateSolution<List<DungeonOp>>> callback)
         {
@@ -94,7 +94,8 @@ namespace SampleSolutions
 
         private float CalculateFitness(List<DungeonOp> solution)
         {
-            var map = new GridMap();
+            // Reset RNG so we are deterministic
+            var map = new GridMap(new Random(GLOBAL_RANDOM_SEED));
             foreach (DungeonOp op in solution)
             {
                 op.Execute(map);

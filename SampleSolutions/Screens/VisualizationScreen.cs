@@ -37,7 +37,7 @@ namespace SampleSolutions.Screens
         {
             var data = new List<DungeonOp>(bestSolution.Solution);
 
-            var map = new GridMap();
+            var map = new GridMap(new Random());
             foreach (var op in data)
             {
                 op.Execute(map);

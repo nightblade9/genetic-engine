@@ -82,14 +82,18 @@ namespace GeneticEngine
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
 
-                // Horrible bug exacerbated by parallel fitness evaluation giving non-deterministic results.
+                // Some domains have a fitness evaluation that gives non-deterministic results. This cold lead to what
+                // looks like a bug, where fitness drops despite elitism. The same solution is carried over correctly,
+                // it simply doesn't deterministically evaluate to the same fitness every time.
+                // To detect for this, crash and notify the user if their fitness function isn't deterministic.
+                
                 // Sanity check: is elitism enabled? Is it big enough to be at least one thing?
                 if (generation >= 2)
                 {
                     float previousBest = previousGenerationScores[previousGenerationScores.Count - 1];
                     if (best.Fitness < previousBest && elitismPercent > 0 && (int)(elitismPercent * this.populationSize) >= 1)
                     {
-                        throw new InvalidOperationException($"Elitism is enabled but fitness on generation {generation} dropped from {previousBest} to {best.Fitness}");
+                        throw new InvalidOperationException($"Your fitness function is not determinstic or the score depends on elements of randomness. Despite elitism, fitness on generation {generation} dropped from {previousBest} to {best.Fitness}.");
                     }
                 }
                 

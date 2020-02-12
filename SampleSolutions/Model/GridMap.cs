@@ -4,9 +4,9 @@ using System;
 namespace SampleSolutions.Model
 {
     public class GridMap
-    {        
-        public const int TILES_WIDE = 40;
-        public const int TILES_HIGH = 15;
+    {
+        public const int TILES_WIDE = 80;
+        public const int TILES_HIGH = 30;
         private const int ROOM_MIN_SIZE = 4;
         private const int ROOM_MAX_SIZE = 6;
         private const int HALL_MIN_SIZE = 5;
@@ -17,12 +17,9 @@ namespace SampleSolutions.Model
 
         private Random random;
 
-        // We create lots of these close to each other temporally, so seed them with a random number from this guy
-        private static Random gridMapRandomizer = new Random();
-
-        public GridMap()
+        public GridMap(Random random)
         {
-            this.random = new Random(gridMapRandomizer.Next());
+            this.random = random;
         }
 
         public bool Get(int x, int y)
