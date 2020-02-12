@@ -9,7 +9,6 @@ namespace SampleSolutions
     {
         static void Main(string[] args)
         {
-            // Not a good idea, fitness is non-deterministic.
             // RunRoguelikeProblem();
 
             // POC: weight/value problem
