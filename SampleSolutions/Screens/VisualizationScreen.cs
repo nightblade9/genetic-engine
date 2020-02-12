@@ -22,7 +22,7 @@ namespace SampleSolutions.Screens
         {
             STATUS_Y = height - 1;
 
-            var evolver = new DungeonEvolver();
+            var evolver = new DungeonSolver();
             this.thread = new Thread(() => evolver.EvolveSolution(this.Redraw));
             this.thread.Start();
             startedOn = DateTime.Now;

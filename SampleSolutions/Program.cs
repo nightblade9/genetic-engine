@@ -10,7 +10,7 @@ namespace SampleSolutions
         static void Main(string[] args)
         {
             // Not a good idea, fitness is non-deterministic.
-            RunRoguelikeProblem();
+            // RunRoguelikeProblem();
 
             // POC: weight/value problem
             // new WeightValueSolver().EvolveSolution((generation, solution) =>
@@ -24,10 +24,10 @@ namespace SampleSolutions
             // });
 
             // Graph POC: curve-fitting problem
-            // new CurveFittingSolver().EvolveSolution((generation, solution) => 
-            // {
-            //     System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}");
-            // });
+            new CurveFittingSolver().EvolveSolution((generation, solution) => 
+            {
+                System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}");
+            });
         }
 
         private static void RunRoguelikeProblem()

@@ -6,7 +6,7 @@ using GoRogue.Pathing;
 
 namespace SampleSolutions
 {
-    public class DungeonEvolver
+    public class DungeonSolver
     {
         private const int MINIMUM_SOLUTION_SIZE = 3; // accept no less than 3 nodes
                 
