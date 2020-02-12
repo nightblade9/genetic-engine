@@ -30,7 +30,7 @@ namespace SampleSolutions
 
         public void EvolveSolution(Action<int, CandidateSolution<OperatorNode<float>>> callback)
         {
-            foreach (var n in Enumerable.Range(-5, 10))
+            for (var n = -5; n <= 10; n++)
             {
                 constants.Add(n);
             }

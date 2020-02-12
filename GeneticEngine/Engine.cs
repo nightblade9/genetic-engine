@@ -90,7 +90,7 @@ namespace GeneticEngine
                     float previousBest = previousGenerationScores[previousGenerationScores.Count - 1];
                     if (best.Fitness < previousBest && elitismPercent > 0 && (int)(elitismPercent * this.populationSize) >= 1)
                     {
-                        throw new InvalidOperationException($"Elitism is enabled but fitness on generation {generation} dropped from {previousBest} to {best.Fitness}");
+                        //throw new InvalidOperationException($"Elitism is enabled but fitness on generation {generation} dropped from {previousBest} to {best.Fitness}");
                     }
                 }
                 
