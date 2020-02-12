@@ -53,7 +53,8 @@ namespace SampleSolutions
             if (node.Operands == null)
             {
                 // We could mutate the node itself, but, meh.
-                return;
+                // Generate a one-node subtree
+                node.Operands = new Node<float>[] { this.GenerateSubtree(0), this.GenerateSubtree(0) };
             }
 
             var newParent = PickRandomNode(node);
