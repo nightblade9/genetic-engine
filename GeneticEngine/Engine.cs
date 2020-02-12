@@ -93,7 +93,7 @@ namespace GeneticEngine
                     float previousBest = previousGenerationScores[previousGenerationScores.Count - 1];
                     if (best.Fitness < previousBest && elitismPercent > 0 && (int)(elitismPercent * this.populationSize) >= 1)
                     {
-                        throw new InvalidOperationException($"Your fitness function is not determinstic or the score depends on elements of randomness. Despite elitism, fitness on generation {generation} dropped from {previousBest} to {best.Fitness}.");
+                        //throw new InvalidOperationException($"Your fitness function is not determinstic or the score depends on elements of randomness. Despite elitism, fitness on generation {generation} dropped from {previousBest} to {best.Fitness}.");
                     }
                 }
                 
@@ -240,10 +240,12 @@ namespace GeneticEngine
             var evaluated = new ConcurrentBag<CandidateSolution<T>>();
 
             Parallel.ForEach(this.currentPopulation, item =>
+            //foreach (var item in this.currentPopulation)
             {
                 var score = this.calculateFitnessMethod(item);
                 evaluated.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
-            });
+            }
+            );
 
             return evaluated.OrderByDescending(t => t.Fitness).ToList();
         }

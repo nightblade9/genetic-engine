@@ -54,5 +54,15 @@ namespace SampleSolutions.UnitTests
             var expected = (2 + 3) * (1 - (7 + x.Value));
             Assert.That(actual, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void CloneClonesVariableNode()
+        {
+            var expected = new VariableNode<int>(new VariableWrapper<int>(37));
+            var actual = expected.Clone();
+            Assert.That(actual.Evaluate(), Is.EqualTo(expected.Evaluate()));
+            Assert.That(actual.Parent, Is.EqualTo(expected.Parent));
+        }
+
     }
 }

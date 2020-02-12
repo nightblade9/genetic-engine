@@ -20,7 +20,7 @@ namespace SampleSolutions
             { "+", new Func<float, float, float>((a, b) => a + b) },
             { "-", new Func<float, float, float>((a, b) => a - b) },
             { "×", new Func<float, float, float>((a, b) => a * b) },
-            { "÷", new Func<float, float, float>((a, b) => b == 0 ? 1 : a / b) },
+            { "÷", new Func<float, float, float>((a, b) => b == 0 ? 0 : a / b) },
         };
         private IList<int> constants = new List<int>();
         private VariableWrapper<float> x = new VariableWrapper<float>(0);
@@ -57,26 +57,28 @@ namespace SampleSolutions
             }
 
             var newParent = PickRandomNode(node);
-            var newSubtree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
 
-            if (newParent.Operands != null)
+            if (newParent.Operands == null)
             {
+                // Generate a one-node subtree
+                newParent.Operands = new Node<float>[] { this.GenerateSubtree(0), this.GenerateSubtree(0) };
+            }
+            else
+            {
+                // Replace one of the nodes with a new subtree
+                var newSubtree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
+
                 lock (randomLock)
                 {
                     if (random.NextDouble() < 0.5)
                     {
-                        newParent.Operands[0] = newSubtree;
+                        newParent.Left = newSubtree;
                     }
                     else
                     {
-                        newParent.Operands[1] = newSubtree;
+                        newParent.Right = newSubtree;
                     }
                 }
-            }
-            else
-            {
-                // Generate a tiny subtree
-                newParent.Operands = new Node<float>[] { this.GenerateSubtree(0), this.GenerateSubtree(0) };
             }
         }
 
@@ -121,7 +123,33 @@ namespace SampleSolutions
             var node1 =  PickRandomNode(child1);
             var node2 =  PickRandomNode(child2);
 
+            // If it's a no-op, just bail.
+            if (node1.ToString() == node2.ToString())
+            {
+                return new List<OperatorNode<float>> { child1, child2 };
+            }
+
+            var node1Parent = node1.Parent;
+            var node2Parent = node2.Parent;
+
+            // Swap nodes by telling their parents, hey this is your new L/R
+            if (node1 == node1Parent.Left) {
+                node1Parent.Left = node2;                
+            } else {
+                node1Parent.Right = node2;
+            }
+            node2.Parent = node1Parent;
+
+            if (node2 == node2Parent.Left) {
+                node2Parent.Left = node1;
+            } else {
+                node2Parent.Right = node1;
+            }
+            node1.Parent = node2Parent;
+
             // Swap node1 and node2, ugh.
+            // Also old, defunct code that swaps actual nodes
+            /*
             // I am not sure if this code is correct.
             var oldNode1 = node1.Clone();
             if (node1.Parent.Operands[0] == node1) {
@@ -140,8 +168,9 @@ namespace SampleSolutions
             var temp = node1.Parent;
             node1.Parent = node2.Parent;
             node2.Parent = temp;
-            
-            // Old code to swap random child of with random child of node2.
+            */
+
+            // Old, defunct code to swap random child of with random child of node2.
             /*
             bool replaceLeft;
             bool replaceWithLeft;
@@ -174,6 +203,10 @@ namespace SampleSolutions
             }
             */
 
+            if (parent1.ToString() == child1.ToString() && parent2.ToString() == child2.ToString())
+            {
+                throw new InvalidOperationException("Cross-over was a no-op?!");
+            }
             return new List<OperatorNode<float>> { child1, child2 };
         }
 
