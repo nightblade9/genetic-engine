@@ -37,7 +37,7 @@ namespace SampleSolutions
 
             this.LoadXAndExpectedValuesFromCsv();
             var tree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
-            var engine = new Engine<OperatorNode<float>, Object>(1000, 0.1f, 0.5f, 0.1f);
+            var engine = new Engine<OperatorNode<float>, Object>(10000, 0.1f, 0.75f, 0f);
             engine.CreateInitialPopulation(this.CreateRandomTrees);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
@@ -53,7 +53,8 @@ namespace SampleSolutions
             if (node.Operands == null)
             {
                 // We could mutate the node itself, but, meh.
-                return;
+                // Generate a one-node subtree
+                node.Operands = new Node<float>[] { this.GenerateSubtree(0), this.GenerateSubtree(0) };
             }
 
             var newParent = PickRandomNode(node);

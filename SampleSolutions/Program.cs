@@ -7,7 +7,7 @@ namespace SampleSolutions
     {
         static void Main(string[] args)
         {
-            // GA: weight/value problem
+            // POC: weight/value problem
             // new WeightValueSolver().EvolveSolution((generation, solution) =>
             // {
             //     System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}");
