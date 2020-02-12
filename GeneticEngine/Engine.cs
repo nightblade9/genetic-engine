@@ -82,15 +82,18 @@ namespace GeneticEngine
                 var fitnessScores = this.EvaulateFitness();
                 best = fitnessScores.First();
 
-                // Horrible bug caused by parallel fitness evaluation giving non-deterministic results.
-
+                // Some domains have a fitness evaluation that gives non-deterministic results. This cold lead to what
+                // looks like a bug, where fitness drops despite elitism. The same solution is carried over correctly,
+                // it simply doesn't deterministically evaluate to the same fitness every time.
+                // To detect for this, crash and notify the user if their fitness function isn't deterministic.
+                
                 // Sanity check: is elitism enabled? Is it big enough to be at least one thing?
                 if (generation >= 2)
                 {
                     float previousBest = previousGenerationScores[previousGenerationScores.Count - 1];
                     if (best.Fitness < previousBest && elitismPercent > 0 && (int)(elitismPercent * this.populationSize) >= 1)
                     {
-                        //throw new InvalidOperationException($"Elitism is enabled but fitness on generation {generation} dropped from {previousBest} to {best.Fitness}");
+                        //throw new InvalidOperationException($"Your fitness function is not determinstic or the score depends on elements of randomness. Despite elitism, fitness on generation {generation} dropped from {previousBest} to {best.Fitness}.");
                     }
                 }
                 
@@ -236,22 +239,13 @@ namespace GeneticEngine
             // than the full population size.
             var evaluated = new ConcurrentBag<CandidateSolution<T>>();
 
-            // I would LOVE to do this in parallel. The performance is better (around 10x).
-            // BUT, there's a big problem. For some reason, doing this in parallel, with the
-            // curve-fitting sample, ends up with future generations having a
-            // poorer fitness than previous generations. AND, for the SAME equation (eg. x^2),
-            // I can see multiple instances in the generation, with different fitness scores!
-            // Even though the fitness is non-random and completely deterministic!
-            // So, SMH, just do this in serial for now... epic fail :<
-
-            //Parallel.ForEach(this.currentPopulation, item =>
-            //{
-            foreach (var item in this.currentPopulation)
+            Parallel.ForEach(this.currentPopulation, item =>
+            //foreach (var item in this.currentPopulation)
             {
                 var score = this.calculateFitnessMethod(item);
                 evaluated.Add(new CandidateSolution<T>() { Solution = item, Fitness = score });
             }
-            //});
+            );
 
             return evaluated.OrderByDescending(t => t.Fitness).ToList();
         }

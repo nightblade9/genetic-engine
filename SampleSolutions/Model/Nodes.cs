@@ -5,11 +5,23 @@ namespace SampleSolutions.Model
     public abstract class Node<T>
     {
         public Node<T> Parent { get; set; } // So we can replace a node
-        public Node<T>[] Operands;
+        
+        public Node<T>[] Operands = null;
 
-        public abstract T Evaluate();
+        public Node<T> Left {
+            get { return this.Operands[0]; }
+            set { this.Operands[0] = value; }
+        }
+
+        public Node<T> Right {
+            get { return this.Operands[1]; }
+            set { this.Operands[1] = value; }
+        }
+
+        public abstract T Evaluate(T x);
 
         public abstract Node<T> Clone();
+
     }
 
     public class OperatorNode<T> : Node<T>
@@ -28,17 +40,17 @@ namespace SampleSolutions.Model
 
         override public Node<T> Clone()
         {
-            return new OperatorNode<T>(this.operationName, this.operation, this.Operands[0].Clone() as Node<T>, this.Operands[1].Clone() as Node<T>);
+            return new OperatorNode<T>(this.operationName, this.operation, this.Left.Clone() as Node<T>, this.Right.Clone() as Node<T>);
         }
 
-        override public T Evaluate()
+        override public T Evaluate(T x)
         {
-            return this.operation.Invoke(this.Operands[0].Evaluate(), this.Operands[1].Evaluate());
+            return this.operation.Invoke(this.Left.Evaluate(x), this.Right.Evaluate(x));
         }
 
         override public string ToString()
         {
-            return $"({this.Operands[0].ToString()} {this.operationName} {this.Operands[1].ToString()})";
+            return $"({this.Left.ToString()} {this.operationName} {this.Right.ToString()})";
         }
     }
 
@@ -58,9 +70,9 @@ namespace SampleSolutions.Model
             return new VariableNode<T>(this.value);
         }
 
-        override public T Evaluate()
+        override public T Evaluate(T x)
         {
-            return this.value.Value;
+            return x;
         }
 
         override public string ToString()
@@ -83,7 +95,7 @@ namespace SampleSolutions.Model
             return new ConstantNode<T>(this.value);
         }
 
-        override public T Evaluate()
+        override public T Evaluate(T x)
         {
             return this.value;
         }
