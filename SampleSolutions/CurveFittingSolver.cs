@@ -22,7 +22,7 @@ namespace SampleSolutions
             { "×", new Func<float, float, float>((a, b) => a * b) },
             { "÷", new Func<float, float, float>((a, b) => b == 0 ? 0 : a / b) },
         };
-        private IList<int> constants = new List<int>();
+        private IList<int> constants = new List<int>(); 
         private VariableWrapper<float> x = new VariableWrapper<float>(0);
         
         // x => correct/expected value of f(x)
@@ -225,15 +225,17 @@ namespace SampleSolutions
         private float CalculateFitness(OperatorNode<float> root)
         {
             float total = 0;
-            foreach (var x in this.data.Keys)
+            lock (this.x)
             {
-                this.x.Value = x;
-                float actualValue = root.Evaluate();
-                float expectedValue = this.data[x];
-                // Calculate how far off we are from the expected value. 
-                total += Math.Abs(actualValue - expectedValue);
+                foreach (var x in this.data.Keys)
+                {
+                    this.x.Value = x;
+                    float actualValue = root.Evaluate();
+                    float expectedValue = this.data[x];
+                    // Calculate how far off we are from the expected value. 
+                    total += Math.Abs(actualValue - expectedValue);
+                }
             }
-
             // Higher fitness is better, so negate
             return -total;
         }
