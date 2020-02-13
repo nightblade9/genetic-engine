@@ -6,9 +6,10 @@ import csv
 import random
 
 # User-defined inputs
-MIN_X = -500
+MIN_X = -1000
 MAX_X = 1000
 
+#EQUATION = lambda x: (-6 * (x**2)) - (3*x) + 17
 # y = x^2 + 2x + 1
 #EQUATION = lambda x: x**2 + (2*x) + 1
 # y=3(x^2 / 8) - 2x/3 + 17
@@ -19,7 +20,7 @@ EQUATION = lambda x: (3 * (x**3)) - (2.0 * (x**2)) + x - 17
 #EQUATION = lambda x: math.sin(x)
 
 # Internal constants
-NUM_POINTS = 5000
+NUM_POINTS = 1000
 OUTPUT_FILE = "data.csv"
 
 x_indicies = []
