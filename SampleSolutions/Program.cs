@@ -25,7 +25,7 @@ namespace SampleSolutions
             // Graph POC: curve-fitting problem
             new CurveFittingSolver().EvolveSolution((generation, solution) => 
             {
-                System.Console.WriteLine($"Generation {generation}: fitness={solution.Fitness}, solution={solution.Solution}");
+                System.Console.WriteLine($"Generation {generation}: fitness={(long)solution.Fitness}, solution={solution.Solution}")
             });
         }
 
