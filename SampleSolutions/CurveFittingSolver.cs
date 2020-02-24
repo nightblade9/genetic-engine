@@ -11,7 +11,6 @@ namespace SampleSolutions
     {
         private const float PROBABILITY_OF_VARIABLE_NODE = 0.2f;
         // When generating trees, big trees are cool. Ditto for mutation, where we may be replacing a huge subtee with a new one.
-        private const float PROBABILITY_OF_SUBTREE = 0.5f;
         private object randomLock = new Object();
         private Random random = new Random();
 
@@ -36,8 +35,7 @@ namespace SampleSolutions
             }
 
             this.LoadXAndExpectedValuesFromCsv();
-            var tree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
-            var engine = new Engine<OperatorNode<float>, Object>(10000, 0.1f, 0.9f, 0.05f);
+            var engine = new Engine<OperatorNode<float>, Object>(750, 0.15f, 0.95f, 0.05f, 6);
             engine.CreateInitialPopulation(this.CreateRandomTrees);
             engine.SetFitnessMethod(this.CalculateFitness);
             engine.SetCrossOverMethod(this.CrossOver);
@@ -66,11 +64,11 @@ namespace SampleSolutions
             }
             else
             {
-                // Replace one of the nodes with a new subtree
-                var newSubtree = this.GenerateSubtree(PROBABILITY_OF_SUBTREE);
-
                 lock (randomLock)
                 {
+                    // Replace one of the nodes with a new subtree
+                    var newSubtree = this.GenerateSubtree(random.Next(5, 10));
+
                     if (random.NextDouble() < 0.5)
                     {
                         newParent.Left = newSubtree;
@@ -241,25 +239,22 @@ namespace SampleSolutions
         {
             // Ideally, this should be ramped half-and-half: half "full" trees, half "grow" trees.
             // But, my brain melted, so instead, we just generate random trees of totally random sizes.
-            return GenerateSubtree(0.5f);
+            return GenerateSubtree(random.Next(2, 4));
         }
 
-        private OperatorNode<float> GenerateSubtree(float probabilityOfRecursing)
+        private OperatorNode<float> GenerateSubtree(int height)
         {
-            bool shouldRecurse;
             string operationName;
 
             lock (randomLock)
             {
-                shouldRecurse = random.NextDouble() < probabilityOfRecursing;
                 operationName = operations.Keys.ElementAt(random.Next(operations.Keys.Count));
             }
 
-            if (shouldRecurse)
+            if (height > 0)
             {
-                // Keep decaying probability so we don't get HUGE trees
-                var left = GenerateSubtree(probabilityOfRecursing / 2);
-                var right = GenerateSubtree(probabilityOfRecursing / 2);
+                var left = GenerateSubtree(height - 1);
+                var right = GenerateSubtree(height - 1);
                 return new OperatorNode<float>(operationName, operations[operationName], left, right);
             }
             else
