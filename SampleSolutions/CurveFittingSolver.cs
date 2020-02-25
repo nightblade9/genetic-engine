@@ -18,7 +18,7 @@ namespace SampleSolutions
         {
             { "+", new Func<float, float, float>((a, b) => a + b) },
             { "-", new Func<float, float, float>((a, b) => a - b) },
-            { "×", new Func<float, float, float>((a, b) => a * b) },
+            { "*", new Func<float, float, float>((a, b) => a * b) },
             { "÷", new Func<float, float, float>((a, b) => b == 0 ? 0 : a / b) },
         };
         private IList<int> constants = new List<int>(); 
